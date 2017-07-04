@@ -13,7 +13,9 @@
                    Content="Statistics"/>
             
             <StackPanel Orientation="Horizontal">
-                <Label Content="# projects: "></Label>
+                <TextBlock Background="AliceBlue" Text="# projects: "/>
+                <TextBlock Background="AliceBlue" Width ="200" Text="{Binding NumberOfProjects}"></TextBlock>
+
             </StackPanel>
             
             <StackPanel Orientation="Horizontal">

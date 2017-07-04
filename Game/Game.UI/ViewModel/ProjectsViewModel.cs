@@ -9,12 +9,11 @@ namespace Game.UI.ViewModel
 {
     public class ProjectsViewModel : ViewModelBase
     {
-        private IProjectDataProvider dataProvider;
         public ObservableCollection<Project> Projects { get; private set; }
-        public ProjectsViewModel(IProjectDataProvider dataProvider)
+        
+        public ProjectsViewModel()
         {
             Projects = new ObservableCollection<Project>();
-            this.dataProvider = dataProvider;
             Messenger.Default.Register<Project>(this, OnProjectAccepted);
         }
 
@@ -25,11 +24,6 @@ namespace Game.UI.ViewModel
 
         public void Load()
         {
-            Projects.Clear();
-            foreach (var project in dataProvider.GetAllProjects())
-            {
-                Projects.Add(project);
-            }
         }
     }
 }

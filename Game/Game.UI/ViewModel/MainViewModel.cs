@@ -1,4 +1,5 @@
 ﻿using Game.DataServices;
+using Game.Model;
 using Game.UI.DataProvider;
 
 namespace Game.UI.ViewModel
@@ -11,8 +12,8 @@ namespace Game.UI.ViewModel
 
         public MainViewModel()
         {
-            this.StatisticsViewModel = new StatisticsViewModel();
-            this.ProjectsViewModel = new ProjectsViewModel(new ProjectDataProvider());
+            this.StatisticsViewModel = new StatisticsViewModel(new SoftwareCompany());
+            this.ProjectsViewModel = new ProjectsViewModel();
             this.ProjectManagementViewModel = new ProjectManagementViewModel(new ProjectsDataService());
         }
 

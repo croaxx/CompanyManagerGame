@@ -18,6 +18,7 @@ namespace Game.DataServices
                 { new Project("Client Service implementation", new DateTime(2022, 6, 11))},
                 { new Project("Refactoring the code", new DateTime(2023, 7, 10))},
                 { new Project("Youtube service implementation", new DateTime(2024, 8, 9))},
+                { new Project("BBV internal project", new DateTime(2025, 5, 4))}
             };
             this.currentProjectIdx = 0;
         }

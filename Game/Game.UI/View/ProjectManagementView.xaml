@@ -16,7 +16,6 @@
             <StackPanel Orientation="Horizontal">
                 <TextBlock Background="AliceBlue" Text="Title: "/>
                 <TextBlock Background="AliceBlue" Width ="200" Text="{Binding OfferedProject.Title}"></TextBlock>
-
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">

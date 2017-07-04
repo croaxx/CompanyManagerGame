@@ -13,7 +13,7 @@ namespace Game.UITests.ViewModel
         [Fact]
         public void ShouldLoadProjects()
         {
-            var viewModel = new ProjectsViewModel(new ProjectDataProviderMock());
+            var viewModel = new ProjectsViewModel();
 
             viewModel.Load();
 

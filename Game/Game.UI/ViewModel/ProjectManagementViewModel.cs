@@ -50,7 +50,7 @@ namespace Game.UI.ViewModel
         private void AcceptProject(object obj)
         {
             Messenger.Default.Send<Project>(OfferedProject);
-                        this.OfferedProject = this.ProjectsDataService.GetNextProject();
+            this.OfferedProject = this.ProjectsDataService.GetNextProject();
         }
 
         private bool CanLoadNextProject(object arg)
