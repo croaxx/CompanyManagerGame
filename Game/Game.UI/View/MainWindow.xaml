@@ -1,0 +1,36 @@
+﻿<Window x:Class="Game.UI.View.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Game.UI.View"
+        xmlns:view="clr-namespace:Game.UI.View"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="500" Width="700">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <view:StatisticsView Grid.Row="0" Grid.Column="1" DataContext="{Binding StatisticsViewModel}">
+        </view:StatisticsView>
+
+        <view:ProjectsView Grid.Row="1" Grid.Column="0" DataContext="{Binding ProjectsViewModel}">
+        </view:ProjectsView>
+
+        <TabControl>
+            <TabItem Header="Projects">
+                <view:ProjectManagementView DataContext="{Binding ProjectManagementViewModel}">
+                </view:ProjectManagementView>
+            </TabItem>
+            <TabItem Header="Developers">
+
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>

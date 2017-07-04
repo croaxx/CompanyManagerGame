@@ -1,0 +1,44 @@
+﻿<UserControl x:Class="Game.UI.View.ProjectManagementView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Game.UI.View"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        
+        <StackPanel HorizontalAlignment="Center">
+
+            <Label Content="Project Description"/>
+
+
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Background="AliceBlue" Text="Title: "/>
+                <TextBlock Background="AliceBlue" Width ="200" Text="{Binding OfferedProject.Title}"></TextBlock>
+
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Background="AliceBlue" Text="Expiry: "/>
+                <TextBlock Background="AliceBlue" Width ="200" Text="{Binding OfferedProject.Expiry, StringFormat='dd/MM/yyyy'}"></TextBlock>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Duration:"/>
+                <Label Content="1 year 2 months"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Work Amount:"/>
+                <Label Content="10000 code lines"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Content="Accept" Width="50" Height="20" Command="{Binding AcceptProjectCommand}"></Button>
+                <Button Margin ="10,0,0,0"  Content="Decline" Width="50" Height="20" Command="{Binding DeclineProjectCommand}"></Button>
+            </StackPanel>
+
+        </StackPanel>
+    </Grid>
+</UserControl>
