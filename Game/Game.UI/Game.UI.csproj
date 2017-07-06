@@ -55,6 +55,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Command\DelegateCommand.cs" />
+    <Compile Include="Converter\PriceConverter.cs" />
+    <Compile Include="Converter\WorkAmountConverter.cs" />
     <Compile Include="DataProvider\IProjectDataProvider.cs" />
     <Compile Include="DataProvider\ProjectDataProvider.cs" />
     <Compile Include="Utility\Messenger.cs" />

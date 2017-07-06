@@ -24,9 +24,7 @@ namespace Game.UI.ViewModel
                 OnPropertyChanged("OfferedProject");
             }
         }
-
         public ICommand DeclineProjectCommand { get; set; }
-
         public ICommand AcceptProjectCommand { get; set; }
 
         public ProjectManagementViewModel(ProjectsDataService dataService)

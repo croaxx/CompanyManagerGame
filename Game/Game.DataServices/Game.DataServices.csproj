@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DevelopersDataService.cs" />
+    <Compile Include="IProjectDataService.cs" />
     <Compile Include="ProjectsDataService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

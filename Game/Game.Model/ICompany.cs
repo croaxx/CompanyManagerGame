@@ -1,13 +1,15 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 
 namespace Game.Model
 {
-    public interface ICompany : INotifyPropertyChanged
+    public interface ICompany
     {
+        event EventHandler<EventArgs> ProjectsCollectionChange;
         string GetCompanyName();
         long GetCompanyBudget();
-        int GetNumberOfEmployees();
         int GetNumberOfProjects();
-        void AcceptNewProject(Project project);
+        bool TryAcceptNewProject(Project project, DateTime startTime);
+        void QuitProject(string title);
     }
 }

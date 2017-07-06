@@ -1,31 +1,16 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace Game.Model
 {
     public class SoftwareCompany : ICompany
     {
-        public event PropertyChangedEventHandler PropertyChanged;
+        private ConcurrentDictionary<string, Project> projects;
 
-        private IList<Project> projects;
-
-        public IList<Project> Projects
-        { 
-            get
-            {
-                return projects;
-            }
-            set
-            {
-                projects = value;
-                OnPropertyChanged("Projects");
-            }
-        }
-
-        private IList<Developer> developers;
+        public event EventHandler<EventArgs> ProjectsCollectionChange;
 
         public string Name { get; private set; }
 
@@ -33,18 +18,19 @@ namespace Game.Model
 
         public SoftwareCompany()
         {
-            this.Projects = new List<Project>();
-            this.developers = new List<Developer>();
+            this.projects = new ConcurrentDictionary<string, Project>();
         }
 
-        public void AcceptNewProject(Project proj)
+        public bool TryAcceptNewProject(Project proj, DateTime startTime)
         {
-            Projects.Add(proj);
-        }
-
-        public void HireDeveloper(Developer dev)
-        {
-            developers.Add(dev);
+            bool result = proj.TrySetStartTime(startTime);
+            
+            if (result)
+            {
+                return projects.TryAdd(proj.Title, proj);;
+            }
+            else
+                return false;
         }
 
         public void FireDeveloperByFullName(string fullname)
@@ -62,19 +48,15 @@ namespace Game.Model
             return CurrentBudget;
         }
 
-        public int GetNumberOfEmployees()
-        {
-            return developers.Count;
-        }
-
         public int GetNumberOfProjects()
         {
-            return Projects.Count;
+            return projects.Count;
         }
 
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        public void QuitProject(string title)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            projects.TryRemove(title, out Project value);
+            ProjectsCollectionChange?.Invoke(this, new EventArgs());
         }
     }
 }

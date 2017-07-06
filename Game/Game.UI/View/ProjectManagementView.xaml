@@ -4,33 +4,41 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Game.UI.View"
+             xmlns:converter ="clr-namespace:Game.UI.Converter"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
+
+    <UserControl.Resources>
+        <converter:PriceConverter x:Key="localPriceConverter"></converter:PriceConverter>
+        <converter:WorkAmountConverter x:Key="workAmountConverter"></converter:WorkAmountConverter>
+    </UserControl.Resources>
+
     <Grid>
         
         <StackPanel HorizontalAlignment="Center">
 
-            <Label Content="Project Description"/>
-
+            <Label Content="Project Description" HorizontalAlignment="Center"/>
 
             <StackPanel Orientation="Horizontal">
-                <TextBlock Background="AliceBlue" Text="Title: "/>
-                <TextBlock Background="AliceBlue" Width ="200" Text="{Binding OfferedProject.Title}"></TextBlock>
+                <TextBlock Text="Title: "/>
+                <TextBlock Width ="200" Text="{Binding OfferedProject.Title}"></TextBlock>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">
-                <TextBlock Background="AliceBlue" Text="Expiry: "/>
-                <TextBlock Background="AliceBlue" Width ="200" Text="{Binding OfferedProject.Expiry, StringFormat='dd/MM/yyyy'}"></TextBlock>
+                <TextBlock Text="Due: "/>
+                <TextBlock Width ="200" Text="{Binding OfferedProject.ExpiryTime, StringFormat='dd/MM/yyyy'}"></TextBlock>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">
-                <Label Content="Duration:"/>
-                <Label Content="1 year 2 months"/>
+                <TextBlock Text="Reward: "/>
+                <TextBlock Width ="200" Text="{Binding OfferedProject.Reward, Converter={StaticResource localPriceConverter}}"></TextBlock>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">
-                <Label Content="Work Amount:"/>
-                <Label Content="10000 code lines"/>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Work Amount: "/>
+                    <TextBlock Width ="200" Text="{Binding OfferedProject.WorkAmountAssigned, Converter={StaticResource workAmountConverter}}"></TextBlock>
+                </StackPanel>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">

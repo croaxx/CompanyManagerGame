@@ -26,7 +26,11 @@
                 <TextBlock Background="AliceBlue" Text="current times: "/>
                 <TextBlock Background="AliceBlue" Width ="200" Text="{Binding CurrentGameTime, StringFormat='dd/MM/yyyy HH:mm::ss'}"></TextBlock>
             </StackPanel>
-            
+
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Background="AliceBlue" Text="Speed factor: "/>
+                <TextBox Background="AliceBlue" Width ="100" Text ="{Binding TimeSpeedFactor, Mode = TwoWay}"></TextBox>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </UserControl>

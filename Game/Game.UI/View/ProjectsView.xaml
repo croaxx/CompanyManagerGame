@@ -4,25 +4,46 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Game.UI.View"
+             xmlns:converter ="clr-namespace:Game.UI.Converter"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
+
+    <UserControl.Resources>
+        <converter:PriceConverter x:Key="localPriceConverter"></converter:PriceConverter>
+    </UserControl.Resources>
+
     <Grid>
-        <ListView ItemsSource="{Binding Projects}">
+        <ListView ItemsSource="{Binding Projects}" x:Name="ListView1">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Border BorderBrush="#CCCCCC" BorderThickness="2">
                         <StackPanel Orientation="Vertical">
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Project Id: "></TextBlock>
+                                <TextBlock Text="Project title: "></TextBlock>
                                 <TextBlock Text="{Binding Title}"></TextBlock>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Started: "></TextBlock>
-                                <!--<TextBlock Text="{Binding Start, StringFormat='{}{0:MM/dd/yyyy}'}"></TextBlock>-->
+                                <TextBlock Text="{Binding StartTime, StringFormat='dd/MM/yyyy'}"></TextBlock>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Due: "></TextBlock>
-                                <TextBlock Text="{Binding Expiry, StringFormat='{}{0:MM/dd/yyyy}'}"></TextBlock>
+                                <TextBlock Text="{Binding ExpiryTime, StringFormat='dd/MM/yyyy'}"></TextBlock>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Reward: "></TextBlock>
+                                <TextBlock Text="{Binding Reward, Converter={StaticResource localPriceConverter}}"></TextBlock>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Time left: "></TextBlock>
+                                <ProgressBar Width ="100" Minimum="0" Maximum="100" Value="50" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Work done: "></TextBlock>
+                                <ProgressBar Width ="100" Minimum="0" Maximum="100" Value="70" />
+                            </StackPanel>
+                            <StackPanel>
+                                <Button Command="{Binding ElementName=ListView1, Path=DataContext.RemoveProjectCommand}" CommandParameter="{Binding}" Width ="40" HorizontalAlignment="Center" Content="X"></Button>
                             </StackPanel>
                         </StackPanel>
                     </Border>

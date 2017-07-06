@@ -9,11 +9,16 @@ namespace Game.UI.ViewModel
         public StatisticsViewModel StatisticsViewModel { get; private set; }
         public ProjectsViewModel ProjectsViewModel { set; private get; }
         public ProjectManagementViewModel ProjectManagementViewModel { set; private get; }
+        public GameEngine GameEngine { get; private set;}
 
         public MainViewModel()
         {
-            this.StatisticsViewModel = new StatisticsViewModel(new SoftwareCompany());
-            this.ProjectsViewModel = new ProjectsViewModel();
+            var timer = new GameTimer();
+            var company = new SoftwareCompany();
+            this.GameEngine = new GameEngine(timer, company);
+
+            this.StatisticsViewModel = new StatisticsViewModel(company, timer);
+            this.ProjectsViewModel = new ProjectsViewModel(company);
             this.ProjectManagementViewModel = new ProjectManagementViewModel(new ProjectsDataService());
         }
 

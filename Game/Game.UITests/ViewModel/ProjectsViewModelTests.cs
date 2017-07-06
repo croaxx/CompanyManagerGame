@@ -10,17 +10,6 @@ namespace Game.UITests.ViewModel
 {
     public class ProjectsViewModelTests
     {
-        [Fact]
-        public void ShouldLoadProjects()
-        {
-            var viewModel = new ProjectsViewModel();
-
-            viewModel.Load();
-
-            viewModel.Projects.Count.Should().Be(3);
-
-            viewModel.Projects[0].Expiry.Should().Be(new DateTime(2018,11,5));
-        }
 
     }
 

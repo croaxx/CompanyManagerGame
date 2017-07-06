@@ -30,5 +30,19 @@ namespace Game.ModelTests
 
             this.testee.IsExpired(currentTime).Should().Be(false);
         }
+
+        [Fact]
+        public void ProjectSetStartTimeFailsAfterFirstSet()
+        {
+            this.testee = new Project();
+
+            bool result = this.testee.TrySetStartTime(DateTime.Now);
+
+            result.Should().Be(true);
+
+            result = this.testee.TrySetStartTime(DateTime.Now);
+
+            result.Should().Be(false);
+        }
     }
 }

@@ -11,15 +11,5 @@ namespace Game.Model.xUnitTesting
         {
             this.testee = new SoftwareCompany();
         }
-
-        [Fact]
-        public void WhenNewDeveloperHired_DevelopersCountIncreases()
-        {
-            var devs = this.testee.GetNumberOfEmployees();
-
-            this.testee.HireDeveloper(new Developer("Thomas", 7000, 10000));
-
-            this.testee.GetNumberOfEmployees().Should().Be(devs + 1);
-        }
     }
 }
