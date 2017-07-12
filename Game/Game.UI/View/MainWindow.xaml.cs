@@ -13,13 +13,8 @@ namespace Game.UI.View
         public MainWindow(MainViewModel viewModel)
         {
             InitializeComponent();
-            this.Loaded += MainViewModel_Loaded;
             this.viewModel = viewModel;
             this.DataContext = this.viewModel;
-        }
-        private void MainViewModel_Loaded(object sender, RoutedEventArgs e)
-        {
-            this.viewModel.Load();
         }
     }
 }

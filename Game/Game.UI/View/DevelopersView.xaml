@@ -1,0 +1,53 @@
+﻿<UserControl x:Class="Game.UI.View.DevelopersView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Game.UI.View"
+             xmlns:converter ="clr-namespace:Game.UI.Converter"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+
+    <UserControl.Resources>
+        <converter:PriceConverter x:Key="localPriceConverter"></converter:PriceConverter>
+        <converter:WorkAmountConverter x:Key="workAmountConverter"></converter:WorkAmountConverter>
+    </UserControl.Resources>
+
+    <Grid>
+        <StackPanel HorizontalAlignment="Center">
+
+            <Label Content="Developer Characteristics" HorizontalAlignment="Center"/>
+            
+            <StackPanel>
+                <Image Width="50" Source="{Binding OfferedDeveloper.Picture}"></Image>
+            </StackPanel>
+            
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Full Name: "/>
+                <TextBlock Width ="200" Text="{Binding OfferedDeveloper.FullName}"></TextBlock>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Date of birth: "/>
+                <TextBlock Width ="200" Text="{Binding OfferedDeveloper.Birth, StringFormat='dd/MM/yyyy'}"></TextBlock>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Salary: "/>
+                <TextBlock Width ="200" Text="{Binding OfferedDeveloper.MonthSalary, Converter={StaticResource localPriceConverter}}"></TextBlock>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Code lines per month: "/>
+                    <TextBlock Width ="200" Text="{Binding OfferedDeveloper.CodeLinesPerDay, Converter={StaticResource workAmountConverter}}"></TextBlock>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Content="Hire" Width="50" Height="20" Command="{Binding HireDeveloperCommand}"></Button>
+                <Button Margin ="10,0,0,0"  Content="Reject" Width="50" Height="20" Command="{Binding RejectDeveloperCommand}"></Button>
+            </StackPanel>
+        </StackPanel>
+
+    </Grid>
+</UserControl>

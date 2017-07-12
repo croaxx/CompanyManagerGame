@@ -10,10 +10,9 @@ namespace Game.UI.ViewModel
 {
     public class StatisticsViewModel : ViewModelBase
     {
-        public ICommand IncrementTimeCommand { get; private set; }
-        public ICompany SoftwareCompany { get; private set; }
-        
-        private ITimer timer;
+        //public ICommand IncrementTimeCommand { get; private set; }
+
+        public GameEngine engine { get; private set; }
 
         private int timeSpeedFactor = 1;
 
@@ -27,7 +26,7 @@ namespace Game.UI.ViewModel
             {
                 timeSpeedFactor = value;
                 OnPropertyChanged("TimeSpeedFactor");
-                this.timer.SetTimeSpeedFactor(timeSpeedFactor);
+                this.engine.timer.SetTimeSpeedFactor(timeSpeedFactor);
             }
         }
 
@@ -62,43 +61,19 @@ namespace Game.UI.ViewModel
             }
         }
 
-        public StatisticsViewModel(ICompany company, ITimer timer)
+        public StatisticsViewModel(GameEngine engine)
         {
-            this.timer = timer;
-            this.timer.SetTimeSpeedFactor(TimeSpeedFactor);
-            this.timer.TimerUpdateEvent += OnTimerUpdateEvent;
-            this.timer.LaunchAsync();
+            this.engine = engine;
+            this.engine.timer.SetTimeSpeedFactor(TimeSpeedFactor);
+            this.engine.timer.LaunchAsync();
 
-            this.SoftwareCompany = company;
-            this.SoftwareCompany.ProjectsCollectionChange += (o, e) => { this.NumberOfProjects = this.SoftwareCompany.GetNumberOfProjects(); };
-            Messenger.Default.Register<Project>(this, OnProjectAccepted);
-            LoadCommands();
+            this.engine.timer.TimerUpdateEvent += OnTimerUpdateEvent;
+            this.engine.company.ProjectsCollectionChange += (o, e) => { this.NumberOfProjects = this.engine.company.GetNumberOfProjects(); };
         }
 
         private void OnTimerUpdateEvent(object sender, TimerUpdateEventArgs e)
         {
             this.CurrentGameTime = e.TimerArgs;
-        }
-
-        private void LoadCommands()
-        {
-            //IncrementTimeCommand = new DelegateCommand(IncrementTime, CanIncrementTime);
-        }
-
-        private bool CanIncrementTime(object arg)
-        {
-            return true;
-        }
-
-        private void OnProjectAccepted(Project proj)
-        {
-            SoftwareCompany.TryAcceptNewProject(proj, CurrentGameTime);
-            NumberOfProjects = SoftwareCompany.GetNumberOfProjects();
-        }
-
-        public void Load()
-        {
-            //this.CurrentGameTime = DateTime.Now; 
         }
     }
 }

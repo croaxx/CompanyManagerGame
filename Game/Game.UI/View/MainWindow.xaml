@@ -7,6 +7,7 @@
         xmlns:view="clr-namespace:Game.UI.View"
         mc:Ignorable="d"
         Title="MainWindow" Height="500" Width="700">
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -29,7 +30,8 @@
                 </view:ProjectManagementView>
             </TabItem>
             <TabItem Header="Developers">
-
+                <view:DevelopersView DataContext="{Binding DevelopersViewModel}">
+                </view:DevelopersView>
             </TabItem>
         </TabControl>
     </Grid>

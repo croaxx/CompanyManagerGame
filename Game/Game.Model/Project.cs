@@ -12,7 +12,10 @@ namespace Game.Model
 
         private bool isStartTimeSet = false;
         public DateTime StartTime { get; private set; }
-
+        
+        public double PercentTimePassed { get; private set; } 
+        
+        
         public Project() {}
         public Project(string title, DateTime expiry)
         {
@@ -32,10 +35,14 @@ namespace Game.Model
             this.WorkAmountAssigned = workAmountAssigned;
         }
         
+        
         public bool TrySetStartTime(DateTime time)
         {
             if (!isStartTimeSet)
             {
+                if ( DateTime.Compare(time, ExpiryTime ) > 0)
+                    return false;
+
                 StartTime = time;
                 isStartTimeSet = true;
                 return true;
@@ -46,6 +53,14 @@ namespace Game.Model
         public bool IsExpired(DateTime current)
         {
             return DateTime.Compare(this.ExpiryTime, current) < 0 ? true : false;
+        }
+
+        public void SetPercentTimePassed(DateTime currentTime)
+        {
+            long elapsedTicks = currentTime.Ticks - StartTime.Ticks;
+            long totalProjectDuration = ExpiryTime.Ticks - StartTime.Ticks;
+
+            this.PercentTimePassed = 100.0*(double)elapsedTicks / (double)totalProjectDuration;
         }
     }
 }

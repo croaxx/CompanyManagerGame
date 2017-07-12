@@ -1,10 +1,10 @@
 ﻿using Game.Model;
 using System.Collections.ObjectModel;
-using Game.UI.Utility;
 using System;
 using System.Windows.Input;
-using System.Collections.Generic;
 using Game.UI.Command;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace Game.UI.ViewModel
 {
@@ -12,14 +12,27 @@ namespace Game.UI.ViewModel
     {
         public ObservableCollection<Project> Projects { get; private set; }
 
-        public ICompany company;
-        
-        public ProjectsViewModel(ICompany company)
+        public GameEngine engine;
+
+        public ProjectsViewModel(GameEngine engine)
         {
             Projects = new ObservableCollection<Project>();
-            this.company = company;
-            Messenger.Default.Register<Project>(this, OnProjectAccepted);
+            this.engine = engine;
+            this.engine.company.ProjectsCollectionChange += OnProjectsCollectionChange;
             LoadCommands();
+        }
+
+        private void OnProjectsCollectionChange(object sender, EventArgs e)
+        {
+            App.Current.Dispatcher.Invoke((Action)delegate
+            {
+                Projects.Clear();
+
+                foreach (var p in this.engine.company.GetProjects())
+                {
+                    Projects.Add(p);
+                }
+            });
         }
 
         public ICommand RemoveProjectCommand { get; private set; }
@@ -37,17 +50,8 @@ namespace Game.UI.ViewModel
         private void RemoveSpecifiedProject(object obj)
         {
             Project p = obj as Project;
-            this.company.QuitProject(p.Title);
+            this.engine.company.QuitProject(p.Title);
             Projects.Remove(p);
-        }
-
-        private void OnProjectAccepted(Project proj)
-        {
-            Projects.Add(proj);
-        }
-
-        public void Load()
-        {
         }
     }
 }

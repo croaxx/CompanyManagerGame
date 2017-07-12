@@ -14,11 +14,11 @@ namespace Game.Model
         
         public DateTime CurrentGameTime{ get; private set; }
 
-        private volatile int timeSpeedFactor;
+        private double timeSpeedFactor;
 
-        public int TimeSpeedFactor { get { return timeSpeedFactor;} }
+        public double TimeSpeedFactor { get { return timeSpeedFactor;} }
 
-        public GameTimer(int updateTimeFrequencyHz = 1, int speedFactor = 1)
+        public GameTimer(int updateTimeFrequencyHz = 1, double speedFactor = 1)
         {
             this.StartTime = DateTime.Now;
             this.CurrentGameTime = this.StartTime;
@@ -45,9 +45,14 @@ namespace Game.Model
             return Task.Factory.StartNew( () =>  RunTimerSynchronously() );
         }
 
-        public void SetTimeSpeedFactor(int factor)
+        public void SetTimeSpeedFactor(double factor)
         {
             this.timeSpeedFactor = factor;
+        }
+
+        public DateTime GetCurrentTime()
+        {
+            return CurrentGameTime;
         }
     }
 }

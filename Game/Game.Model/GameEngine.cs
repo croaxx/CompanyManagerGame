@@ -12,6 +12,12 @@ namespace Game.Model
         {
             this.timer = timer;
             this.company = company;
+            this.timer.TimerUpdateEvent += OnTimerUpdateEvent;
+        }
+
+        private void OnTimerUpdateEvent(object sender, TimerUpdateEventArgs e)
+        {
+            this.company.UpdateProjectsStatus(e.TimerArgs);
         }
     }
 }

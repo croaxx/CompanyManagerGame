@@ -16,6 +16,7 @@ namespace Game.Model
     {
         event EventHandler<TimerUpdateEventArgs> TimerUpdateEvent;
         Task LaunchAsync();
-        void SetTimeSpeedFactor(int factor);
+        void SetTimeSpeedFactor(double factor);
+        DateTime GetCurrentTime();
     }
 }

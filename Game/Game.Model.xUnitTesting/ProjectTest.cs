@@ -34,14 +34,31 @@ namespace Game.ModelTests
         [Fact]
         public void ProjectSetStartTimeFailsAfterFirstSet()
         {
-            this.testee = new Project();
+            var startTime = new DateTime(2017, 12, 10);
+            var expiry = startTime.AddDays(5);
+            this.testee = new Project(expiry);
 
-            bool result = this.testee.TrySetStartTime(DateTime.Now);
+            bool result = this.testee.TrySetStartTime(startTime);
 
             result.Should().Be(true);
 
-            result = this.testee.TrySetStartTime(DateTime.Now);
+            result = this.testee.TrySetStartTime(expiry.AddDays(10));
 
+            result.Should().Be(false);
+        }
+
+        [Fact]
+        public void ProjectSetStartTimeFails_ReturnsFalse_IfStartTimeExceedsExpiry()
+        {
+            // set
+            var expiryTime = new DateTime(2017, 10, 5); 
+            var startTime = expiryTime.AddMilliseconds(1);
+            this.testee = new Project(expiryTime);
+
+            // act
+            bool result = this.testee.TrySetStartTime(startTime);
+            
+            //assert
             result.Should().Be(false);
         }
     }

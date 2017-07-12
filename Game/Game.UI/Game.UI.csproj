@@ -56,15 +56,20 @@
     </ApplicationDefinition>
     <Compile Include="Command\DelegateCommand.cs" />
     <Compile Include="Converter\PriceConverter.cs" />
+    <Compile Include="Converter\ProgressForegroundConverter.cs" />
     <Compile Include="Converter\WorkAmountConverter.cs" />
     <Compile Include="DataProvider\IProjectDataProvider.cs" />
     <Compile Include="DataProvider\ProjectDataProvider.cs" />
     <Compile Include="Utility\Messenger.cs" />
+    <Compile Include="ViewModel\DevelopersViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ProjectManagementViewModel.cs" />
     <Compile Include="ViewModel\ProjectsViewModel.cs" />
     <Compile Include="ViewModel\StatisticsViewModel.cs" />
     <Compile Include="ViewModel\ViewModelBase.cs" />
+    <Compile Include="View\DevelopersView.xaml.cs">
+      <DependentUpon>DevelopersView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
@@ -104,6 +109,10 @@
     <Page Include="Styles\TextBox.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\DevelopersView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\MainWindow.xaml">
       <SubType>Designer</SubType>

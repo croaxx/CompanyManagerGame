@@ -9,6 +9,8 @@ namespace Game.UI.ViewModel
     public class ProjectManagementViewModel : ViewModelBase
     {
         public ProjectsDataService ProjectsDataService { get; private set; }
+
+        public GameEngine engine;
         
         private Project offeredProject;
         public Project OfferedProject
@@ -27,9 +29,10 @@ namespace Game.UI.ViewModel
         public ICommand DeclineProjectCommand { get; set; }
         public ICommand AcceptProjectCommand { get; set; }
 
-        public ProjectManagementViewModel(ProjectsDataService dataService)
+        public ProjectManagementViewModel(ProjectsDataService dataService, GameEngine engine)
         {
             this.ProjectsDataService = dataService;
+            this.engine = engine;
             this.OfferedProject = dataService.GetNextProject();
             LoadCommands();
         }
@@ -47,7 +50,7 @@ namespace Game.UI.ViewModel
 
         private void AcceptProject(object obj)
         {
-            Messenger.Default.Send<Project>(OfferedProject);
+            this.engine.company.TryAcceptNewProject(offeredProject, this.engine.timer.GetCurrentTime());
             this.OfferedProject = this.ProjectsDataService.GetNextProject();
         }
 
@@ -59,12 +62,6 @@ namespace Game.UI.ViewModel
         private void LoadNextProject(object obj)
         {
             this.OfferedProject = this.ProjectsDataService.GetNextProject();
-        }
-
-        public void Load()
-        {
-            //var dataService = new ProjectsDataService();
-            //this.offeredProject = dataService.GetNextProject();
         }
     }
 }
