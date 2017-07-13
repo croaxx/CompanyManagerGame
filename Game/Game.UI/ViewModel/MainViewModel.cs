@@ -11,6 +11,7 @@ namespace Game.UI.ViewModel
         public ProjectManagementViewModel ProjectManagementViewModel { set; private get; }
         public DevelopersViewModel DevelopersViewModel { get; private set; }
 
+        public DevelopersSummaryViewModel DevelopersSummaryViewModel { get; private set; }
 
         public GameEngine GameEngine { get; private set;}
 
@@ -25,6 +26,7 @@ namespace Game.UI.ViewModel
             this.ProjectsViewModel = new ProjectsViewModel(GameEngine);
             this.ProjectManagementViewModel = new ProjectManagementViewModel(new ProjectsDataService(), GameEngine);
             this.DevelopersViewModel = new DevelopersViewModel(new DevelopersDataService(), GameEngine);
+            this.DevelopersSummaryViewModel = new DevelopersSummaryViewModel(GameEngine);
         }
     }
 }

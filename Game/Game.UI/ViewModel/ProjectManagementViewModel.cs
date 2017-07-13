@@ -51,7 +51,9 @@ namespace Game.UI.ViewModel
         private void AcceptProject(object obj)
         {
             this.engine.company.TryAcceptNewProject(offeredProject, this.engine.timer.GetCurrentTime());
-            this.OfferedProject = this.ProjectsDataService.GetNextProject();
+            
+            if (this.ProjectsDataService.IsNextProjectAvailable())
+                this.OfferedProject = this.ProjectsDataService.GetNextProject();
         }
 
         private bool CanLoadNextProject(object arg)

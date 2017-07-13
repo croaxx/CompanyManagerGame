@@ -7,11 +7,13 @@ namespace Game.Model
     public class SoftwareCompany : ICompany
     {
         private ConcurrentDictionary<string, Project> projects;
-        private ConcurrentDictionary<KeyValuePair<string, DateTime>, Developer> developers;
+        private ConcurrentDictionary<Developer, object> developers;
 
         private IBookingLogic _bookingLogic;
 
         public event EventHandler<EventArgs> ProjectsCollectionChange;
+
+        public event EventHandler<EventArgs> DevelopersCollectionChange;
 
         public string Name { get; private set; }
 
@@ -23,6 +25,7 @@ namespace Game.Model
         {
             this._bookingLogic = bookingLogic;
             this.projects = new ConcurrentDictionary<string, Project>();
+            this.developers = new ConcurrentDictionary<Developer, object>();
             LastBookedTime = DateTime.MinValue;
         }
 
@@ -81,6 +84,18 @@ namespace Game.Model
             return p;
         }
 
+        public IList<Developer> GetDevelopers()
+        {
+            var d = new List<Developer>();
+
+            foreach (var item in developers)
+            {
+                d.Add(item.Key);
+            }
+
+            return d;
+        }
+
         public void UpdateProjectsStatus(DateTime currentTime)
         {
             if (this.LastBookedTime == DateTime.MinValue)
@@ -110,9 +125,25 @@ namespace Game.Model
             ProjectsCollectionChange?.Invoke(this, new EventArgs());
         }
 
-        //public bool TryHireDeveloper(string name, DateTime Birthdate)
-        //{
+        public bool TryHireDeveloper(Developer d)
+        {
+            bool status = developers.TryAdd(d, null);
 
-        //}
+            if (status)
+                DevelopersCollectionChange?.Invoke(this, new EventArgs());
+            
+            return status;
+        }
+
+        public int GetNumberOfDevelopers()
+        {
+            return this.developers.Count;
+        }
+
+        public void FireDeveloper(Developer d)
+        {
+            developers.TryRemove(d, out object value);
+            DevelopersCollectionChange?.Invoke(this, new EventArgs());
+        }
     }
 }

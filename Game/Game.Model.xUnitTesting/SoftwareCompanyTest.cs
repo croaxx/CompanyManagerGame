@@ -19,6 +19,13 @@ namespace Game.Model.xUnitTesting
             company.TryAcceptNewProject(new Project("Project3", new DateTime(2017, 10, 10)), new DateTime(2017, 10, 5));
         }
 
+        private void SetCompanyWithThreeEmployees(SoftwareCompany company)
+        {
+            company.TryHireDeveloper(new Developer("Glenn", new DateTime(1990, 12, 2), 6000, 1000));
+            company.TryHireDeveloper(new Developer("Niko", new DateTime(1989, 12, 2), 6000, 1000));
+            company.TryHireDeveloper(new Developer("Rolf", new DateTime(1992, 12, 2), 6000, 5000));
+        }
+
         [Fact]
         public void CompanyReturns_IEnumerableOfProjects()
         {
@@ -30,6 +37,19 @@ namespace Game.Model.xUnitTesting
 
             var projects = company.GetProjects();
             projects.Count.Should().Be(expectedNumberOfProjects);
+        }
+
+        [Fact]
+        public void CompanyReturns_IEnumerableOfDevelopers()
+        {
+            var bookingLogicFake = A.Fake<IBookingLogic>();
+            var company = new SoftwareCompany(bookingLogicFake);
+            SetCompanyWithThreeEmployees(company);
+
+            int expectedNumberOfDevelopers = 3;
+
+            var projects = company.GetDevelopers();
+            projects.Count.Should().Be(expectedNumberOfDevelopers);
         }
 
         [Fact]
@@ -176,6 +196,67 @@ namespace Game.Model.xUnitTesting
             company.UpdateProjectsStatus(nextTicValue);
             //assert
             A.CallTo(() => bookingLogicFake.BookTime(A<IEnumerable<Project>>.Ignored, A<IEnumerable<Developer>>.Ignored)).MustHaveHappened(Repeated.Exactly.Once);
+        }
+
+        [Fact]
+        public void HiringDeveloperReturnsTrueAndIncreasesCountByOne()
+        {
+            // arrange 
+            var bookingLogicFake = A.Fake<IBookingLogic>();
+            var company = new SoftwareCompany(bookingLogicFake);
+            int countDevelopers = company.GetNumberOfDevelopers();
+
+            //act
+            bool isAccepted = company.TryHireDeveloper(new Developer("Peter Graham", new DateTime(2000, 5, 3), 10000, 3000));
+
+            isAccepted.Should().Be(true);
+            company.GetNumberOfDevelopers().Should().Be(countDevelopers + 1);
+        }
+
+        [Fact]
+        public void HiringDeveloperWithSameNameAndBirthdayReturnsFalse()
+        {
+            // arrange 
+            var bookingLogicFake = A.Fake<IBookingLogic>();
+            var company = new SoftwareCompany(bookingLogicFake);
+            int countDevelopers = company.GetNumberOfDevelopers();
+
+            //act
+            bool isAccepted = company.TryHireDeveloper(new Developer("Peter Graham", new DateTime(2000, 5, 3), 10000, 3000));
+            isAccepted = company.TryHireDeveloper(new Developer("Peter Graham", new DateTime(2000, 5, 3), 10000, 3000));
+
+            isAccepted.Should().Be(false);
+            company.GetNumberOfDevelopers().Should().Be(countDevelopers + 1);
+        }
+
+        public void HiringDeveloperWithSameNameButDifferentBirthdayReturnsTrue()
+        {
+            // arrange 
+            var bookingLogicFake = A.Fake<IBookingLogic>();
+            var company = new SoftwareCompany(bookingLogicFake);
+            int countDevelopers = company.GetNumberOfDevelopers();
+
+            //act
+            bool isAccepted = company.TryHireDeveloper(new Developer("Peter Graham", new DateTime(2000, 5, 3), 10000, 3000));
+            isAccepted = company.TryHireDeveloper(new Developer("Peter Graham", new DateTime(2000, 5, 2), 10000, 3000));
+
+            isAccepted.Should().Be(true);
+            company.GetNumberOfDevelopers().Should().Be(countDevelopers + 1);
+        }
+
+        public void HiringDeveloperWithDifferentNamesButSameBirthdayReturnsTrue()
+        {
+            // arrange 
+            var bookingLogicFake = A.Fake<IBookingLogic>();
+            var company = new SoftwareCompany(bookingLogicFake);
+            int countDevelopers = company.GetNumberOfDevelopers();
+
+            //act
+            bool isAccepted = company.TryHireDeveloper(new Developer("Peter Graham", new DateTime(2000, 5, 3), 10000, 3000));
+            isAccepted = company.TryHireDeveloper(new Developer("Niko Komarevskiy", new DateTime(2000, 5, 3), 10000, 3000));
+
+            isAccepted.Should().Be(true);
+            company.GetNumberOfDevelopers().Should().Be(countDevelopers + 1);
         }
     }
 

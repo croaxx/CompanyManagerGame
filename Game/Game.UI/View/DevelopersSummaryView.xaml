@@ -1,0 +1,64 @@
+﻿<UserControl x:Class="Game.UI.View.DevelopersSummaryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Game.UI.View"
+             xmlns:converter ="clr-namespace:Game.UI.Converter"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+
+    <UserControl.Resources>
+        <converter:PriceConverter x:Key="localPriceConverter"></converter:PriceConverter>
+        <converter:WorkAmountConverter x:Key="workAmountConverter"></converter:WorkAmountConverter>
+        <converter:ThousandBasisConverter x:Key="thousandBasisConverter"></converter:ThousandBasisConverter>
+    </UserControl.Resources>
+
+    <Grid>
+        <ListView ItemsSource="{Binding Developers}" x:Name="ListView1">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Border Padding="10" BorderBrush="#CCCCCC" BorderThickness="2">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Width="35" Source="{Binding Picture}"></Image>
+                            <StackPanel Margin ="10,0,0,0" Orientation="Vertical">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Name: "></TextBlock>
+                                    <TextBlock Text="{Binding FullName}"></TextBlock>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Salary: "></TextBlock>
+                                    <TextBlock Text="{Binding MonthSalary, Converter={StaticResource localPriceConverter}}"></TextBlock>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Code lines/month: "></TextBlock>
+                                    <TextBlock Text="{Binding CodeLinesPerMonth, Converter={StaticResource thousandBasisConverter}}"></TextBlock>
+                                </StackPanel>
+                            </StackPanel>
+                            <Button Command="{Binding ElementName=ListView1, Path=DataContext.FireDeveloperCommand}" CommandParameter="{Binding}" Margin ="10,0,0,0" Content ="Fire" Width="35" Height="20"></Button>
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </Grid>
+</UserControl>
+
+
+<!--<StackPanel Orientation="Vertical">
+    <StackPanel Orientation="Horizontal">
+        <TextBlock Text="Full Name: "></TextBlock>
+        <TextBlock Text="{Binding FullName}"></TextBlock>
+    </StackPanel>
+    <StackPanel Orientation="Horizontal">
+        <TextBlock Text="Salary: "></TextBlock>
+        <TextBlock Text="{Binding MonthSalary}"></TextBlock>
+    </StackPanel>
+    <StackPanel Orientation="Horizontal">
+        <TextBlock Text="Code lines p/m: "></TextBlock>
+        <TextBlock Text="{Binding CodeLinesPerMonth}"></TextBlock>
+    </StackPanel>
+    --><!--<StackPanel>
+                                <Button Command="{Binding ElementName=ListView1, Path=DataContext.RemoveProjectCommand}" CommandParameter="{Binding}" Width ="40" HorizontalAlignment="Center" Content="X"></Button>
+                            </StackPanel>--><!--
+</StackPanel>-->

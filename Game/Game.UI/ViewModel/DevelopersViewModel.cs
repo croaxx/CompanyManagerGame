@@ -1,10 +1,7 @@
 ﻿using Game.DataServices;
 using Game.Model;
 using Game.UI.Command;
-using System;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 namespace Game.UI.ViewModel
 {
@@ -12,8 +9,8 @@ namespace Game.UI.ViewModel
     {
         private DevelopersDataService developersDataService;
 
-        public ICommand HireDeveloperCommand { get; set; }
-        public ICommand RejectDeveloperCommand { get; set; }
+        public ICommand HireDeveloperCommand { get; private set; }
+        public ICommand RejectDeveloperCommand { get; private set; }
 
         public Developer offeredDeveloper;
 
@@ -50,7 +47,7 @@ namespace Game.UI.ViewModel
 
         private bool CanRejectDeveloper(object arg)
         {
-            return true;
+            return this.developersDataService.IsNextDeveloperAvailable();
         }
 
         private void RejectDeveloper(object obj)
@@ -60,13 +57,15 @@ namespace Game.UI.ViewModel
 
         private bool CanHireDeveloper(object arg)
         {
-            return true;
+            return OfferedDeveloper != null;
         }
 
         private void HireDeveloper(object obj)
         {
-            //this.engine.company.TryAcceptNewProject(offeredProject, this.engine.timer.GetCurrentTime());
-            //this.OfferedProject = this.ProjectsDataService.GetNextProject();
+            this.engine.company.TryHireDeveloper(this.offeredDeveloper);
+            
+            if (this.developersDataService.IsNextDeveloperAvailable())
+                this.OfferedDeveloper = this.developersDataService.GetNextDeveloper();
         }
     }
 }

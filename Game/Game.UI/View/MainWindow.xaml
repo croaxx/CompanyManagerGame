@@ -24,6 +24,9 @@
         <view:ProjectsView Grid.Row="1" Grid.Column="0" DataContext="{Binding ProjectsViewModel}">
         </view:ProjectsView>
 
+        <view:DevelopersSummaryView Grid.Row="1" Grid.Column="1" DataContext="{Binding DevelopersSummaryViewModel}">
+        </view:DevelopersSummaryView>
+
         <TabControl>
             <TabItem Header="Projects">
                 <view:ProjectManagementView DataContext="{Binding ProjectManagementViewModel}">

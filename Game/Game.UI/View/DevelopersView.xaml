@@ -11,6 +11,7 @@
     <UserControl.Resources>
         <converter:PriceConverter x:Key="localPriceConverter"></converter:PriceConverter>
         <converter:WorkAmountConverter x:Key="workAmountConverter"></converter:WorkAmountConverter>
+        <converter:ThousandBasisConverter x:Key="thousandBasisConverter"></converter:ThousandBasisConverter>
     </UserControl.Resources>
 
     <Grid>
@@ -40,7 +41,7 @@
             <StackPanel Orientation="Horizontal">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Code lines per month: "/>
-                    <TextBlock Width ="200" Text="{Binding OfferedDeveloper.CodeLinesPerDay, Converter={StaticResource workAmountConverter}}"></TextBlock>
+                    <TextBlock Width ="200" Text="{Binding OfferedDeveloper.CodeLinesPerMonth, Converter={StaticResource thousandBasisConverter}}"></TextBlock>
                 </StackPanel>
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">

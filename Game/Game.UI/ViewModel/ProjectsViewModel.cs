@@ -3,8 +3,6 @@ using System.Collections.ObjectModel;
 using System;
 using System.Windows.Input;
 using Game.UI.Command;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 namespace Game.UI.ViewModel
 {

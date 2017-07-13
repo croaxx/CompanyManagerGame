@@ -10,8 +10,6 @@ namespace Game.UI.ViewModel
 {
     public class StatisticsViewModel : ViewModelBase
     {
-        //public ICommand IncrementTimeCommand { get; private set; }
-
         public GameEngine engine { get; private set; }
 
         private int timeSpeedFactor = 1;
@@ -46,6 +44,22 @@ namespace Game.UI.ViewModel
             }
         }
         
+        private int numberOfDevelopers;
+
+        public int NumberOfDevelopers
+        { 
+            get
+            {
+                return numberOfDevelopers;
+            }
+            set
+            {
+                numberOfDevelopers = value;
+                OnPropertyChanged("NumberOfDevelopers");
+            }
+        }
+
+
         private DateTime currentGameTime;
         public DateTime CurrentGameTime
         {
@@ -69,6 +83,7 @@ namespace Game.UI.ViewModel
 
             this.engine.timer.TimerUpdateEvent += OnTimerUpdateEvent;
             this.engine.company.ProjectsCollectionChange += (o, e) => { this.NumberOfProjects = this.engine.company.GetNumberOfProjects(); };
+            this.engine.company.DevelopersCollectionChange += (o, e) => { this.NumberOfDevelopers = this.engine.company.GetNumberOfDevelopers(); };
         }
 
         private void OnTimerUpdateEvent(object sender, TimerUpdateEventArgs e)

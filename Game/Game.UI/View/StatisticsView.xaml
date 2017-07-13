@@ -16,11 +16,11 @@
             <StackPanel Orientation="Horizontal">
                 <TextBlock FontSize="18" Background="AliceBlue" Text="# projects: "/>
                 <TextBlock FontSize="18" Background="AliceBlue" Width ="200" Text="{Binding NumberOfProjects}"></TextBlock>
-
             </StackPanel>
             
             <StackPanel Orientation="Horizontal">
                 <TextBlock FontSize="18" Text="# developers: "></TextBlock>
+                <TextBlock FontSize="18" Background="AliceBlue" Width ="200" Text="{Binding NumberOfDevelopers}"></TextBlock>
             </StackPanel>
             
             <StackPanel Orientation="Horizontal">
