@@ -1,6 +1,7 @@
 ﻿using FakeItEasy;
 using FluentAssertions;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Xunit;
 
@@ -29,8 +30,7 @@ namespace Game.Model.xUnitTesting
         [Fact]
         public void CompanyReturns_IEnumerableOfProjects()
         {
-            var bookingLogicFake = A.Fake<IBookingLogic>();
-            var company = new SoftwareCompany(bookingLogicFake);
+            var company = new SoftwareCompany();
             SetCompanyWithThreeProjects(company);
 
             int expectedNumberOfProjects = 3;
@@ -42,8 +42,7 @@ namespace Game.Model.xUnitTesting
         [Fact]
         public void CompanyReturns_IEnumerableOfDevelopers()
         {
-            var bookingLogicFake = A.Fake<IBookingLogic>();
-            var company = new SoftwareCompany(bookingLogicFake);
+            var company = new SoftwareCompany();
             SetCompanyWithThreeEmployees(company);
 
             int expectedNumberOfDevelopers = 3;
@@ -56,8 +55,7 @@ namespace Game.Model.xUnitTesting
         void CompanyCantAcceptNewProject_IfTheProjectWithTheSameNameIsAlreadyPresent()
         {
             // arrange
-            var bookingLogicFake = A.Fake<IBookingLogic>();
-            var company = new SoftwareCompany(bookingLogicFake);
+            var company = new SoftwareCompany();
             bool isAccepted = company.TryAcceptNewProject(new Project("Project1", DateTime.Now), DateTime.Now);
 
             // act
@@ -67,143 +65,10 @@ namespace Game.Model.xUnitTesting
         }
 
         [Fact]
-        public void DayJump_WhenTimerReachesNextDay()
-        {
-
-        }
-
-        [Fact]
-        public void FirstTicIsSavedToLastBookedDay()
-        {
-            //arrange
-            var bookingLogicFake = A.Fake<IBookingLogic>();
-            var company = new SoftwareCompany(bookingLogicFake);
-
-            var expectedValue = DateTime.Now;
-            //act
-            company.UpdateProjectsStatus(expectedValue);
-            //assert
-            company.LastBookedTime.Should().Be(expectedValue);
-        }
-
-        [Fact]
-        public void FirstTicIsNotSaved_WhenLastBookedDayHasValue()
-        {
-            //arrange
-            var bookingLogicFake = A.Fake<IBookingLogic>();
-            var company = new SoftwareCompany(bookingLogicFake);
-            DateTime dateTime = DateTime.Now.AddHours(-1);
-
-            company.LastBookedTime = dateTime;
-
-            var nextTicValue = DateTime.Now;
-            //act
-            company.UpdateProjectsStatus(nextTicValue);
-            //assert
-            company.LastBookedTime.Should().Be(dateTime);
-        }
-
-        [Fact]
-        public void TimerReachesNextDay_ThenBookingFunctionIsCalled()
-        {
-            //arrange
-            var bookingLogicFake = A.Fake<IBookingLogic>();
-            var company = new SoftwareCompany(bookingLogicFake);
-            DateTime today = DateTime.Now;
-            company.LastBookedTime = today;
-
-            var nextTicValue = today.AddDays(1);
-            //act
-            company.UpdateProjectsStatus(nextTicValue);
-            //assert
-            A.CallTo(() => bookingLogicFake.BookTime(A<IEnumerable<Project>>.Ignored, A<IEnumerable<Developer>>.Ignored)).MustHaveHappened(Repeated.Exactly.Once);
-        }
-
-        [Fact]
-        public void TimerDoesNotReachNextDay_ThenBookingFunctionIsNotCalled()
-        {
-            //arrange
-            var bookingLogicFake = A.Fake<IBookingLogic>();
-            var company = new SoftwareCompany(bookingLogicFake);
-            DateTime startDate = DateTime.Parse("1.1.2000");
-            company.LastBookedTime = startDate;
-
-            var nextTicValue = startDate.AddMilliseconds(1);
-            //act
-            company.UpdateProjectsStatus(nextTicValue);
-            //assert
-            A.CallTo(() => bookingLogicFake.BookTime(A<IEnumerable<Project>>.Ignored, A<IEnumerable<Developer>>.Ignored)).MustNotHaveHappened();
-        }
-        [Fact]
-        public void TimerEdgeCaseEndOfDay_ThenBookingFunctionIsCalled()
-        {
-            //arrange
-            var bookingLogicFake = A.Fake<IBookingLogic>();
-            var company = new SoftwareCompany(bookingLogicFake);
-            DateTime startDate = DateTime.Parse("1.1.2000 23:59:59");
-            company.LastBookedTime = startDate;
-
-            var nextTicValue = startDate.AddSeconds(1);
-            //act
-            company.UpdateProjectsStatus(nextTicValue);
-            //assert
-            A.CallTo(() => bookingLogicFake.BookTime(A<IEnumerable<Project>>.Ignored, A<IEnumerable<Developer>>.Ignored)).MustHaveHappened(Repeated.Exactly.Once);
-        }
-
-        [Fact]
-        public void TimerEdgeCaseEndOfMonth_ThenBookingFunctionIsCalled()
-        {
-            //arrange
-            var bookingLogicFake = A.Fake<IBookingLogic>();
-            var company = new SoftwareCompany(bookingLogicFake);
-            DateTime startDate = DateTime.Parse("31.1.2000 23:59:59");
-            company.LastBookedTime = startDate;
-
-            var nextTicValue = startDate.AddSeconds(1);
-            //act
-            company.UpdateProjectsStatus(nextTicValue);
-            //assert
-            A.CallTo(() => bookingLogicFake.BookTime(A<IEnumerable<Project>>.Ignored, A<IEnumerable<Developer>>.Ignored)).MustHaveHappened(Repeated.Exactly.Once);
-        }
-
-        [Fact]
-        public void TimerEdgeCaseEndOfYear_ThenBookingFunctionIsCalled()
-        {
-            //arrange
-            var bookingLogicFake = A.Fake<IBookingLogic>();
-            var company = new SoftwareCompany(bookingLogicFake);
-            DateTime startDate = DateTime.Parse("31.12.2000 23:59:59");
-            company.LastBookedTime = startDate;
-
-            var nextTicValue = startDate.AddSeconds(1);
-            //act
-            company.UpdateProjectsStatus(nextTicValue);
-            //assert
-            A.CallTo(() => bookingLogicFake.BookTime(A<IEnumerable<Project>>.Ignored, A<IEnumerable<Developer>>.Ignored)).MustHaveHappened(Repeated.Exactly.Once);
-        }
-
-        [Fact]
-        public void TimerJumpsMoreThanADay_ThenBookingFunctionIsCalled()
-        {
-            //arrange
-            var bookingLogicFake = A.Fake<IBookingLogic>();
-            var company = new SoftwareCompany(bookingLogicFake);
-            DateTime startDate = DateTime.Parse("31.12.2000 23:59:59");
-            company.LastBookedTime = startDate;
-
-            var nextTicValue = startDate.AddDays(10);
-            //act
-            company.UpdateProjectsStatus(nextTicValue);
-            //assert
-            A.CallTo(() => bookingLogicFake.BookTime(A<IEnumerable<Project>>.Ignored, A<IEnumerable<Developer>>.Ignored)).MustHaveHappened(Repeated.Exactly.Once);
-        }
-
-        [Fact]
         public void HiringDeveloperReturnsTrueAndIncreasesCountByOne()
         {
             // arrange 
-            var bookingLogicFake = A.Fake<IBookingLogic>();
-            var company = new SoftwareCompany(bookingLogicFake);
+            var company = new SoftwareCompany();
             int countDevelopers = company.GetNumberOfDevelopers();
 
             //act
@@ -217,8 +82,7 @@ namespace Game.Model.xUnitTesting
         public void HiringDeveloperWithSameNameAndBirthdayReturnsFalse()
         {
             // arrange 
-            var bookingLogicFake = A.Fake<IBookingLogic>();
-            var company = new SoftwareCompany(bookingLogicFake);
+            var company = new SoftwareCompany();
             int countDevelopers = company.GetNumberOfDevelopers();
 
             //act
@@ -229,11 +93,11 @@ namespace Game.Model.xUnitTesting
             company.GetNumberOfDevelopers().Should().Be(countDevelopers + 1);
         }
 
+        [Fact]
         public void HiringDeveloperWithSameNameButDifferentBirthdayReturnsTrue()
         {
             // arrange 
-            var bookingLogicFake = A.Fake<IBookingLogic>();
-            var company = new SoftwareCompany(bookingLogicFake);
+            var company = new SoftwareCompany();
             int countDevelopers = company.GetNumberOfDevelopers();
 
             //act
@@ -241,23 +105,86 @@ namespace Game.Model.xUnitTesting
             isAccepted = company.TryHireDeveloper(new Developer("Peter Graham", new DateTime(2000, 5, 2), 10000, 3000));
 
             isAccepted.Should().Be(true);
-            company.GetNumberOfDevelopers().Should().Be(countDevelopers + 1);
+            company.GetNumberOfDevelopers().Should().Be(countDevelopers + 2);
         }
 
+        [Fact]
         public void HiringDeveloperWithDifferentNamesButSameBirthdayReturnsTrue()
         {
             // arrange 
-            var bookingLogicFake = A.Fake<IBookingLogic>();
-            var company = new SoftwareCompany(bookingLogicFake);
+            var company = new SoftwareCompany();
             int countDevelopers = company.GetNumberOfDevelopers();
 
-            //act
+            // act
             bool isAccepted = company.TryHireDeveloper(new Developer("Peter Graham", new DateTime(2000, 5, 3), 10000, 3000));
             isAccepted = company.TryHireDeveloper(new Developer("Niko Komarevskiy", new DateTime(2000, 5, 3), 10000, 3000));
-
+            
+            // assert
             isAccepted.Should().Be(true);
-            company.GetNumberOfDevelopers().Should().Be(countDevelopers + 1);
+            company.GetNumberOfDevelopers().Should().Be(countDevelopers + 2);
         }
+
+        [Fact]
+        public void SoftwareCompanyConstructorSetsNextSalaryDateTo25thOfNextYear_()
+        {
+            // arrange
+            var currentTime = new DateTime(2015, 12, 11);
+
+            //act
+            var company = new SoftwareCompany(currentTime);
+            var expectedNextSalaryDate = new DateTime(2016, 1, 25); 
+
+            // assert
+            company.GetNextSalaryPaymentDate().Should().Be(expectedNextSalaryDate);
+        }
+
+        [Fact]
+        public void SoftwareCompanyConstructorSetsNextSalaryDateTo25thOfNextMonth()
+        {
+            // arrange
+            var currentTime = new DateTime(2015, 11, 11);
+
+            //act
+            var company = new SoftwareCompany(currentTime);
+            var expectedNextSalaryDate = new DateTime(2015, 12, 25); 
+
+            // assert
+            company.GetNextSalaryPaymentDate().Should().Be(expectedNextSalaryDate);
+        }
+
+        [Fact]
+        public void UpdateCompanyStatus_SetsLastBookedDateToDateOfCurrentTime()
+        {
+            // arrange
+            var logic = A.Fake<ICompanyLogic>();
+            var companyFoundationTime = new DateTime(2018, 10, 2, 14, 20, 33);
+            var company = new SoftwareCompany(companyFoundationTime);
+            var currentTime = new DateTime(2020, 11, 4, 19, 30, 53);
+            var expectedNewTime = new DateTime(2020, 11, 4, 14, 20, 33);
+
+            // act
+            company.UpdateCompanyStatus(currentTime, logic);
+
+            // assert
+            company.LastBookedTime.Should().Be(expectedNewTime);
+        }
+
+        [Fact]
+        public void UpdateCompanyStatus_Executes_PaySalariesAndRemoveUnpaidDevs_ThreeTimes()
+        {
+            // arrange
+            var logic = A.Fake<ICompanyLogic>();
+            var companyFoundationTime = new DateTime(2018, 11, 2, 14, 20, 33);
+            var company = new SoftwareCompany(companyFoundationTime);
+            var currentTime = new DateTime(2019, 2, 26, 14, 20, 33);
+            var expectedNextSalaryTime = new DateTime(2019, 3, 25, 14, 20, 33);
+
+            // act
+            company.UpdateCompanyStatus(currentTime, logic);
+
+            // assert
+            company.GetNextSalaryPaymentDate().Should().Be(expectedNextSalaryTime);
+         }
     }
 
 }

@@ -41,7 +41,7 @@
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Work done: "></TextBlock>
-                                <ProgressBar Width ="100" Minimum="0" Maximum="100" Value="70" />
+                                <ProgressBar Width ="100" Minimum="0" Maximum="100" Value="{Binding CompletionPercent, Mode=OneWay}" Foreground="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Value}" />
                             </StackPanel>
                             <StackPanel>
                                 <Button Command="{Binding ElementName=ListView1, Path=DataContext.RemoveProjectCommand}" CommandParameter="{Binding}" Width ="40" HorizontalAlignment="Center" Content="X"></Button>

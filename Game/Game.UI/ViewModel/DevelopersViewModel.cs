@@ -25,7 +25,7 @@ namespace Game.UI.ViewModel
             set
             {
                 offeredDeveloper = value;
-                offeredDeveloper.Picture.Freeze();
+                offeredDeveloper?.Picture.Freeze();
                 OnPropertyChanged("OfferedDeveloper");
             }
         }
@@ -57,15 +57,20 @@ namespace Game.UI.ViewModel
 
         private bool CanHireDeveloper(object arg)
         {
-            return OfferedDeveloper != null;
+            return this.OfferedDeveloper != null;
         }
 
         private void HireDeveloper(object obj)
         {
-            this.engine.company.TryHireDeveloper(this.offeredDeveloper);
-            
-            if (this.developersDataService.IsNextDeveloperAvailable())
-                this.OfferedDeveloper = this.developersDataService.GetNextDeveloper();
+            if (this.OfferedDeveloper != null)
+            {
+                this.engine.company.TryHireDeveloper(this.OfferedDeveloper);
+
+                if (this.developersDataService.IsNextDeveloperAvailable())
+                    this.OfferedDeveloper = this.developersDataService.GetNextDeveloper();
+                else
+                    this.OfferedDeveloper = null;
+            }
         }
     }
 }

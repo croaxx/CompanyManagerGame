@@ -8,6 +8,7 @@ namespace Game.UI.ViewModel
 {
     public class DevelopersSummaryViewModel
     {
+        public readonly int monthsFiringSpanTime;
         public ICommand FireDeveloperCommand { get; private set; }
 
         private GameEngine engine;
@@ -19,23 +20,24 @@ namespace Game.UI.ViewModel
             this.Developers = new ObservableCollection<Developer>();
             this.engine = engine;
             this.engine.company.DevelopersCollectionChange += OnDevelopersCollectionChange;
+            this.monthsFiringSpanTime = 3;
 
             LoadCommands();
         }
 
         private void LoadCommands()
         {
-            FireDeveloperCommand = new DelegateCommand(RemoveSpecifiedDeveloper, CanRemoveSpecifiedDeveloper);
+            FireDeveloperCommand = new DelegateCommand(ResignSpecifiedDeveloper, CanResignSpecifiedDeveloper);
         }
 
-        private void RemoveSpecifiedDeveloper(object obj)
+        private void ResignSpecifiedDeveloper(object obj)
         {
             Developer d = obj as Developer;
-            this.engine.company.FireDeveloper(d);
-            Developers.Remove(d);
+            this.engine.company.ResignDeveloperAfterMonths(d, this.engine.timer.GetCurrentTime(), this.monthsFiringSpanTime);
+            //Developers.Remove(d);
         }
 
-        private bool CanRemoveSpecifiedDeveloper(object arg)
+        private bool CanResignSpecifiedDeveloper(object arg)
         {
             return true;
         }

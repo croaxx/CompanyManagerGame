@@ -1,18 +1,47 @@
-﻿using Game.DataServices;
-using Game.Model;
-using Game.UI.Command;
-using Game.UI.Utility;
+﻿using Game.Model;
 using System;
-using System.ComponentModel;
-using System.Windows.Input;
 
 namespace Game.UI.ViewModel
 {
     public class StatisticsViewModel : ViewModelBase
     {
         public GameEngine engine { get; private set; }
+        
+        public DateTime FoundationDate { get; private set;}
 
         private int timeSpeedFactor = 1;
+
+        public DateTime nextSalaryPaymentDate;
+
+        public DateTime NextSalaryPaymentDate
+        {
+            get
+            {
+                return nextSalaryPaymentDate;
+            }
+
+            set
+            {
+                nextSalaryPaymentDate = value;
+                OnPropertyChanged("NextSalaryPaymentDate");
+            }
+        }
+
+        private long budgetCurrent;
+
+        public long BudgetCurrent
+        { 
+            get
+            {
+                return budgetCurrent;
+            }
+
+            set
+            {
+                budgetCurrent = value;
+                OnPropertyChanged("BudgetCurrent");
+            }
+        }
 
         public int TimeSpeedFactor 
         {
@@ -75,15 +104,24 @@ namespace Game.UI.ViewModel
             }
         }
 
-        public StatisticsViewModel(GameEngine engine)
+        public StatisticsViewModel(GameEngine engine, ITimer timer)
         {
             this.engine = engine;
             this.engine.timer.SetTimeSpeedFactor(TimeSpeedFactor);
             this.engine.timer.LaunchAsync();
 
+            this.FoundationDate = this.engine.timer.GetCurrentTime();
+            this.BudgetCurrent = this.engine.company.GetCompanyBudget();
+            this.NextSalaryPaymentDate = this.engine.company.GetNextSalaryPaymentDate();
+
             this.engine.timer.TimerUpdateEvent += OnTimerUpdateEvent;
             this.engine.company.ProjectsCollectionChange += (o, e) => { this.NumberOfProjects = this.engine.company.GetNumberOfProjects(); };
             this.engine.company.DevelopersCollectionChange += (o, e) => { this.NumberOfDevelopers = this.engine.company.GetNumberOfDevelopers(); };
+            this.engine.company.BudgetChange += (o, e) => 
+            { 
+                this.NextSalaryPaymentDate = this.engine.company.GetNextSalaryPaymentDate();
+                this.BudgetCurrent = this.engine.company.GetCompanyBudget();
+            };
         }
 
         private void OnTimerUpdateEvent(object sender, TimerUpdateEventArgs e)

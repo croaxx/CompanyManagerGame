@@ -4,15 +4,37 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Game.UI.View"
+             xmlns:converter ="clr-namespace:Game.UI.Converter"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
+
+    <UserControl.Resources>
+        <converter:PriceConverter x:Key="localPriceConverter"></converter:PriceConverter>
+        <converter:SalaryPaymentDayConverter x:Key="salaryPaymentDayConverter"></converter:SalaryPaymentDayConverter>
+    </UserControl.Resources>
+
     <Grid>
         <StackPanel Orientation="Vertical">
             
             <Label HorizontalAlignment="Center"
                    FontSize="22"
                    Content="Statistics"/>
-            
+
+            <StackPanel Orientation="Horizontal">
+                <TextBlock FontSize="18" Background="AliceBlue" Text="Company founded on: "/>
+                <TextBlock FontSize="18" Background="AliceBlue" Width ="200" Text="{Binding FoundationDate, StringFormat='dd/MM/yyyy'}"></TextBlock>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <TextBlock FontSize="18" Background="AliceBlue" Text="Next salary payment on: "/>
+                <TextBlock FontSize="18" Background="AliceBlue" Width ="200" Text="{Binding NextSalaryPaymentDate, StringFormat='dd/MM/yyyy'}"></TextBlock>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <TextBlock FontSize="18" Background="AliceBlue" Text="Current Budget: "/>
+                <TextBlock FontSize="18" Background="AliceBlue" Width ="200" Text="{Binding BudgetCurrent, Converter={StaticResource localPriceConverter}}"></TextBlock>
+            </StackPanel>
+
             <StackPanel Orientation="Horizontal">
                 <TextBlock FontSize="18" Background="AliceBlue" Text="# projects: "/>
                 <TextBlock FontSize="18" Background="AliceBlue" Width ="200" Text="{Binding NumberOfProjects}"></TextBlock>

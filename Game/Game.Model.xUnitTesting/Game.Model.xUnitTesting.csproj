@@ -64,6 +64,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DeveloperxUnitTesting.cs" />
+    <Compile Include="ExtensionMethodsxUnitTesting.cs" />
+    <Compile Include="CompanyLogicxUnitTesting.cs" />
     <Compile Include="GameTimerxUnitTesting.cs" />
     <Compile Include="ProjectsDataServicexUnitTesting.cs" />
     <Compile Include="ProjectTest.cs" />

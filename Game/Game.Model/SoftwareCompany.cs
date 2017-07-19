@@ -1,32 +1,64 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Game.Model
 {
+    public class NextSalaryPaymentEventArgs : EventArgs
+    {
+        public DateTime DateTimeArgs { get; }
+        public NextSalaryPaymentEventArgs(DateTime args)
+        {
+            DateTimeArgs = args;
+        }
+    }
+
     public class SoftwareCompany : ICompany
     {
         private ConcurrentDictionary<string, Project> projects;
-        private ConcurrentDictionary<Developer, object> developers;
-
-        private IBookingLogic _bookingLogic;
+        private ConcurrentDictionary<Developer, Developer> developers;
 
         public event EventHandler<EventArgs> ProjectsCollectionChange;
-
         public event EventHandler<EventArgs> DevelopersCollectionChange;
+        public event EventHandler<EventArgs> BudgetChange;
 
         public string Name { get; private set; }
+        public DateTime FoundationDate { get; private set; }
+        public DateTime NextSalaryPaymentDate { get; private set; }
 
-        public long CurrentBudget { get; private set; }
-
-        public DateTime LastBookedTime { get; set; }
-
-        public SoftwareCompany(IBookingLogic bookingLogic)
+        private long currentBudget;
+        public DateTime LastBookedTime { get; private set; }
+        private void SetNextSalaryPaymentDate()
         {
-            this._bookingLogic = bookingLogic;
+            this.NextSalaryPaymentDate = this.NextSalaryPaymentDate.IncrementMonths(1);
+        }
+
+        public SoftwareCompany()
+        {
             this.projects = new ConcurrentDictionary<string, Project>();
-            this.developers = new ConcurrentDictionary<Developer, object>();
-            LastBookedTime = DateTime.MinValue;
+            this.developers = new ConcurrentDictionary<Developer, Developer>();
+            this.currentBudget = 100000;
+        }
+
+        private void SetFirstSalaryPaymentDateTo(int day)
+        {
+            var date = FoundationDate.IncrementMonths(1);
+
+            this.NextSalaryPaymentDate = date.AddDays(day - date.Day);
+        }
+
+        public SoftwareCompany(DateTime time, int salaryDay = 25) : this()
+        {
+            this.FoundationDate = time;
+            this.LastBookedTime = this.FoundationDate;
+            SetFirstSalaryPaymentDateTo(salaryDay);
+        }
+
+        private void OnSalaryPayment(object sender, EventArgs e)
+        {
+            SetNextSalaryPaymentDate();
         }
 
         public bool TryAcceptNewProject(Project proj, DateTime startTime)
@@ -58,7 +90,7 @@ namespace Game.Model
 
         public long GetCompanyBudget()
         {
-            return CurrentBudget;
+            return currentBudget;
         }
 
         public int GetNumberOfProjects()
@@ -96,38 +128,31 @@ namespace Game.Model
             return d;
         }
 
-        public void UpdateProjectsStatus(DateTime currentTime)
+        public void UpdateCompanyStatus(DateTime currentTime, ICompanyLogic logic)
         {
-            if (this.LastBookedTime == DateTime.MinValue)
+            while (LastBookedTime.Date != currentTime.Date)
             {
-                this.LastBookedTime = currentTime;
-                return;
+                if (LastBookedTime.Date == NextSalaryPaymentDate.Date)
+                {
+                    logic.PaySalariesAndRemoveUnpaidDevs(developers, ref currentBudget);
+                    SetNextSalaryPaymentDate();
+                }
+                
+                logic.RemoveExpiredProjectsAndUpdateTimeStatus(projects, LastBookedTime);
+                logic.RemoveResignedDevelopers(developers, LastBookedTime);
+                logic.PerformOneWorkDayOnProjects(developers, projects);
+
+                LastBookedTime = LastBookedTime.AddHours(24);
             }
 
-            if (
-                //same month
-                (currentTime.Day > LastBookedTime.Day && 
-                currentTime.Month == LastBookedTime.Month &&
-                currentTime.Year == LastBookedTime.Year ) ||
-                //next month
-                (currentTime.Month > LastBookedTime.Month &&
-                currentTime.Year == LastBookedTime.Year) ||
-                //next year
-                currentTime.Year > LastBookedTime.Year)
-            {
-                this._bookingLogic.BookTime(null, null);
-            }
-            foreach (var p in projects)
-            {
-                p.Value.SetPercentTimePassed(currentTime);
-            }
-        
             ProjectsCollectionChange?.Invoke(this, new EventArgs());
+            DevelopersCollectionChange?.Invoke(this, new EventArgs());
+            BudgetChange?.Invoke(this, new EventArgs());
         }
 
         public bool TryHireDeveloper(Developer d)
         {
-            bool status = developers.TryAdd(d, null);
+            bool status = developers.TryAdd(d, d);
 
             if (status)
                 DevelopersCollectionChange?.Invoke(this, new EventArgs());
@@ -140,10 +165,17 @@ namespace Game.Model
             return this.developers.Count;
         }
 
-        public void FireDeveloper(Developer d)
+        public void ResignDeveloperAfterMonths(Developer d, DateTime currenttime, int monthsspan)
         {
-            developers.TryRemove(d, out object value);
+            d.Resign(currenttime.AddMonths(monthsspan));
+            //developers.TryRemove(d, out object value);
+            developers.AddOrUpdate(d, d, (key, oldValue) => d);
             DevelopersCollectionChange?.Invoke(this, new EventArgs());
+        }
+
+        public DateTime GetNextSalaryPaymentDate()
+        {
+            return this.NextSalaryPaymentDate;
         }
     }
 }

@@ -18,11 +18,11 @@ namespace Game.UI.ViewModel
         public MainViewModel()
         {
             var timer = new GameTimer();
-            var booking = new BookingLogic();
-            var company = new SoftwareCompany(booking);
-            this.GameEngine = new GameEngine(timer, company);
+            var company = new SoftwareCompany(timer.GetCurrentTime());
+            var logic = new CompanyLogic();
+            this.GameEngine = new GameEngine(timer, company, logic);
 
-            this.StatisticsViewModel = new StatisticsViewModel(GameEngine);
+            this.StatisticsViewModel = new StatisticsViewModel(GameEngine, timer);
             this.ProjectsViewModel = new ProjectsViewModel(GameEngine);
             this.ProjectManagementViewModel = new ProjectManagementViewModel(new ProjectsDataService(), GameEngine);
             this.DevelopersViewModel = new DevelopersViewModel(new DevelopersDataService(), GameEngine);

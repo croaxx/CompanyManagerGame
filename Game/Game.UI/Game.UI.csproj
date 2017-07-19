@@ -55,8 +55,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Command\DelegateCommand.cs" />
+    <Compile Include="Converter\EmploymentStatusConverter.cs" />
     <Compile Include="Converter\PriceConverter.cs" />
     <Compile Include="Converter\ProgressForegroundConverter.cs" />
+    <Compile Include="Converter\SalaryPaymentDayConverter.cs" />
     <Compile Include="Converter\ThousandBasisConverter.cs" />
     <Compile Include="Converter\WorkAmountConverter.cs" />
     <Compile Include="DataProvider\IProjectDataProvider.cs" />

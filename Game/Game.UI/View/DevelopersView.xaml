@@ -35,13 +35,13 @@
 
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Salary: "/>
-                <TextBlock Width ="200" Text="{Binding OfferedDeveloper.MonthSalary, Converter={StaticResource localPriceConverter}}"></TextBlock>
+                <TextBlock Width ="200" Text="{Binding OfferedDeveloper.MonthlySalary, Converter={StaticResource localPriceConverter}}"></TextBlock>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Code lines per month: "/>
-                    <TextBlock Width ="200" Text="{Binding OfferedDeveloper.CodeLinesPerMonth, Converter={StaticResource thousandBasisConverter}}"></TextBlock>
+                    <TextBlock Text="Code lines per day: "/>
+                    <TextBlock Width ="200" Text="{Binding OfferedDeveloper.CodeLinesPerDay, Converter={StaticResource thousandBasisConverter}}"></TextBlock>
                 </StackPanel>
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">

@@ -35,8 +35,8 @@ namespace Game.Model
                 TimerUpdateEvent?.Invoke(this, new TimerUpdateEventArgs(CurrentGameTime));
 
                 Thread.Sleep(waitTimeInMilliseconds);
-
-                CurrentGameTime = CurrentGameTime.AddMilliseconds(TimeSpeedFactor*waitTimeInMilliseconds);
+               
+                CurrentGameTime = this.CurrentGameTime.AddMilliseconds((long)TimeSpeedFactor*waitTimeInMilliseconds);
             }
         }
 

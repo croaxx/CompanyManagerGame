@@ -12,6 +12,7 @@
         <converter:PriceConverter x:Key="localPriceConverter"></converter:PriceConverter>
         <converter:WorkAmountConverter x:Key="workAmountConverter"></converter:WorkAmountConverter>
         <converter:ThousandBasisConverter x:Key="thousandBasisConverter"></converter:ThousandBasisConverter>
+        <converter:EmploymentStatusConverter x:Key="employmentStatusConverter"></converter:EmploymentStatusConverter>
     </UserControl.Resources>
 
     <Grid>
@@ -28,11 +29,15 @@
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="Salary: "></TextBlock>
-                                    <TextBlock Text="{Binding MonthSalary, Converter={StaticResource localPriceConverter}}"></TextBlock>
+                                    <TextBlock Text="{Binding MonthlySalary, Converter={StaticResource localPriceConverter}}"></TextBlock>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="Code lines/month: "></TextBlock>
-                                    <TextBlock Text="{Binding CodeLinesPerMonth, Converter={StaticResource thousandBasisConverter}}"></TextBlock>
+                                    <TextBlock Text="Code lines/day: "></TextBlock>
+                                    <TextBlock Text="{Binding CodeLinesPerDay, Converter={StaticResource thousandBasisConverter}}"></TextBlock>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Status: "></TextBlock>
+                                    <TextBlock Text="{Binding FireDate, Converter={StaticResource employmentStatusConverter}}"></TextBlock>
                                 </StackPanel>
                             </StackPanel>
                             <Button Command="{Binding ElementName=ListView1, Path=DataContext.FireDeveloperCommand}" CommandParameter="{Binding}" Margin ="10,0,0,0" Content ="Fire" Width="35" Height="20"></Button>

@@ -14,7 +14,7 @@ namespace Game.DataServices
         {
             this.projects = new List<Project>
             {
-                { new Project("Quake IV development", new DateTime(2020, 5, 12), 50000, 20000)},
+                { new Project("Quake IV development", new DateTime(2020, 5, 12), 50000, 5000)},
                 { new Project("Client Service implementation", new DateTime(2022, 6, 11), 150000, 30000)},
                 { new Project("Refactoring the code", new DateTime(2023, 7, 10), 250000, 40000)},
                 { new Project("Youtube service implementation", new DateTime(2024, 8, 9), 350000, 50000)},
