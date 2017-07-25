@@ -7,16 +7,15 @@ namespace Game.UI.ViewModel
 {
     public class DevelopersViewModel : ViewModelBase
     {
-        private DevelopersDataService developersDataService;
+        private IDeveloperDataService developersDataService;
 
         public ICommand HireDeveloperCommand { get; private set; }
         public ICommand RejectDeveloperCommand { get; private set; }
 
-        public Developer offeredDeveloper;
-
         private GameEngine engine;
 
-        public Developer OfferedDeveloper
+        public IDeveloper offeredDeveloper;
+        public IDeveloper OfferedDeveloper
         {
             get
             {
@@ -25,7 +24,7 @@ namespace Game.UI.ViewModel
             set
             {
                 offeredDeveloper = value;
-                offeredDeveloper?.Picture.Freeze();
+                (offeredDeveloper as Developer)?.Picture.Freeze();
                 OnPropertyChanged("OfferedDeveloper");
             }
         }
@@ -33,9 +32,8 @@ namespace Game.UI.ViewModel
         public DevelopersViewModel(DevelopersDataService devDataService, GameEngine engine)
         {
             this.engine = engine;
-            this.developersDataService = devDataService;
-            this.OfferedDeveloper = developersDataService.GetNextDeveloper();
-
+            developersDataService = devDataService;
+            OfferedDeveloper = developersDataService.GetNextDeveloper();
             LoadCommands();
         }
 
@@ -44,32 +42,28 @@ namespace Game.UI.ViewModel
             HireDeveloperCommand = new DelegateCommand(HireDeveloper, CanHireDeveloper);
             RejectDeveloperCommand = new DelegateCommand(RejectDeveloper, CanRejectDeveloper);
         }
-
         private bool CanRejectDeveloper(object arg)
         {
-            return this.developersDataService.IsNextDeveloperAvailable();
+            return developersDataService.IsNextDeveloperAvailable();
         }
-
         private void RejectDeveloper(object obj)
         {
-            this.OfferedDeveloper = this.developersDataService.GetNextDeveloper();
+            OfferedDeveloper = developersDataService.GetNextDeveloper();
         }
-
         private bool CanHireDeveloper(object arg)
         {
-            return this.OfferedDeveloper != null;
+            return OfferedDeveloper != null;
         }
-
         private void HireDeveloper(object obj)
         {
-            if (this.OfferedDeveloper != null)
+            if (OfferedDeveloper != null)
             {
-                this.engine.company.TryHireDeveloper(this.OfferedDeveloper);
+                engine.company.TryHireDeveloper(OfferedDeveloper);
 
-                if (this.developersDataService.IsNextDeveloperAvailable())
-                    this.OfferedDeveloper = this.developersDataService.GetNextDeveloper();
+                if (developersDataService.IsNextDeveloperAvailable())
+                    OfferedDeveloper = developersDataService.GetNextDeveloper();
                 else
-                    this.OfferedDeveloper = null;
+                    OfferedDeveloper = null;
             }
         }
     }

@@ -1,54 +1,24 @@
 ﻿using FakeItEasy;
 using FluentAssertions;
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Game.Model.xUnitTesting
 {
     public class SoftwareCompanyTest
     {
-        public SoftwareCompanyTest()
-        {
-        }
-
-        private void SetCompanyWithThreeProjects(ICompany company)
+        private void SetupCompanyWithThreeProjects(ICompany company)
         {
             company.TryAcceptNewProject(new Project("Project1", new DateTime(2017, 10, 10)), new DateTime(2017, 10, 5));
             company.TryAcceptNewProject(new Project("Project2", new DateTime(2017, 10, 10)), new DateTime(2017, 10, 5));
             company.TryAcceptNewProject(new Project("Project3", new DateTime(2017, 10, 10)), new DateTime(2017, 10, 5));
         }
 
-        private void SetCompanyWithThreeEmployees(SoftwareCompany company)
+        private void SetupCompanyWithThreeEmployees(SoftwareCompany company)
         {
             company.TryHireDeveloper(new Developer("Glenn", new DateTime(1990, 12, 2), 6000, 1000));
             company.TryHireDeveloper(new Developer("Niko", new DateTime(1989, 12, 2), 6000, 1000));
             company.TryHireDeveloper(new Developer("Rolf", new DateTime(1992, 12, 2), 6000, 5000));
-        }
-
-        [Fact]
-        public void CompanyReturns_IEnumerableOfProjects()
-        {
-            var company = new SoftwareCompany();
-            SetCompanyWithThreeProjects(company);
-
-            int expectedNumberOfProjects = 3;
-
-            var projects = company.GetProjects();
-            projects.Count.Should().Be(expectedNumberOfProjects);
-        }
-
-        [Fact]
-        public void CompanyReturns_IEnumerableOfDevelopers()
-        {
-            var company = new SoftwareCompany();
-            SetCompanyWithThreeEmployees(company);
-
-            int expectedNumberOfDevelopers = 3;
-
-            var projects = company.GetDevelopers();
-            projects.Count.Should().Be(expectedNumberOfDevelopers);
         }
 
         [Fact]
@@ -81,11 +51,9 @@ namespace Game.Model.xUnitTesting
         [Fact]
         public void HiringDeveloperWithSameNameAndBirthdayReturnsFalse()
         {
-            // arrange 
             var company = new SoftwareCompany();
             int countDevelopers = company.GetNumberOfDevelopers();
 
-            //act
             bool isAccepted = company.TryHireDeveloper(new Developer("Peter Graham", new DateTime(2000, 5, 3), 10000, 3000));
             isAccepted = company.TryHireDeveloper(new Developer("Peter Graham", new DateTime(2000, 5, 3), 10000, 3000));
 

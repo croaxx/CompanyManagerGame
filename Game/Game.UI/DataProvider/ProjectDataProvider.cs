@@ -14,7 +14,7 @@ namespace Game.UI.DataProvider
         {
 
         }
-        public IEnumerable<Project> GetAllProjects()
+        public IEnumerable<IProject> GetAllProjects()
         {
             this.dataService = new ProjectsDataService();
 

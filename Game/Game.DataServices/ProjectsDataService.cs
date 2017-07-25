@@ -4,15 +4,15 @@ using System.Collections.Generic;
 
 namespace Game.DataServices
 {
-    public class ProjectsDataService
+    public class ProjectsDataService : IProjectDataService
     {
-        private IList<Project> projects;
+        private IList<IProject> projects;
 
         private int currentProjectIdx;
 
         public ProjectsDataService()
         {
-            this.projects = new List<Project>
+            projects = new List<IProject>
             {
                 { new Project("Quake IV development", new DateTime(2020, 5, 12), 50000, 5000)},
                 { new Project("Client Service implementation", new DateTime(2022, 6, 11), 150000, 30000)},
@@ -24,11 +24,11 @@ namespace Game.DataServices
                 { new Project("Bitcoin trader", new DateTime(2023, 12, 3), 250000, 60000)},
                 { new Project("Google earth", new DateTime(2024, 8, 4), 3500000, 120000)}
             };
-            this.currentProjectIdx = 0;
+            currentProjectIdx = 0;
         }
-        public IEnumerable<Project> GetAllProjects()
+        public IEnumerable<IProject> GetAllProjects()
         {
-            var projects = new List<Project> 
+            var projects = new List<IProject> 
             {
                 { new Project("Bank account database", new DateTime(2020, 5, 12), 50000, 20000)},
                 { new Project("Consulting for BMW", new DateTime(2020, 5, 12), 150000, 30000)},
@@ -38,12 +38,10 @@ namespace Game.DataServices
 
             return projects;
         }
-
-        public Project GetNextProject()
+        public IProject GetNextProject()
         {
             return  projects[currentProjectIdx++];
         }
-
         public bool IsNextProjectAvailable()
         {
             return currentProjectIdx < projects.Count;

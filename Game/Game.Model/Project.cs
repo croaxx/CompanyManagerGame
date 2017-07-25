@@ -2,49 +2,45 @@
 
 namespace Game.Model
 {
-    public class Project
+    public class Project : IProject
     {
-        public DateTime ExpiryTime { get; private set; }
-        public long WorkAmountAssigned { get; private set; }
-        public bool IsDone { get; private set; } = false;
-        public long WorkAmountRest { get; private set; }
-        public double CompletionPercent { get; private set;}
-        public string Title { get; private set; }
-        public long  Reward { get; private set; }
-
         private bool isStartTimeSet = false;
-        public DateTime StartTime { get; private set; }
-        
-        public double PercentTimePassed { get; private set; } 
-        
-        
-        public Project() {}
-        public Project(string title, DateTime expiry)
-        {
-            this.Title = title;
-            this.ExpiryTime = expiry;
-        }
+
         public Project(DateTime expiry)
         {
-            this.ExpiryTime = expiry;
+            ExpiryTime = expiry;
         }
-        public Project(string title, DateTime expiry,
-                       long reward, long workAmountAssigned)
+        public Project(string title, DateTime expiry) : this(expiry)
         {
-            this.Title = title;
-            this.ExpiryTime = expiry;
-            this.Reward = reward;
-            this.WorkAmountAssigned = workAmountAssigned;
-            this.WorkAmountRest = this.WorkAmountAssigned;
-            this.CompletionPercent = 0;
+            Title = title;
         }
-        
-        
+        public Project(string title, DateTime expiry, long reward, long workAmountAssigned) : this(title, expiry)
+        {
+            Reward = reward;
+
+            if (workAmountAssigned < 0)
+                throw new ArgumentOutOfRangeException();
+            else
+                WorkAmountAssigned = workAmountAssigned;
+
+            WorkAmountRemaining = WorkAmountAssigned;
+            WorkCompletionPercentage = 0.0;
+            IsWorkCompleted = WorkAmountRemaining == 0 ? true : false;
+        }
+
+        public DateTime ExpiryTime { get; }
+        public long WorkAmountAssigned { get; }
+        public bool IsWorkCompleted { get; private set; }
+        public long WorkAmountRemaining { get; private set; }
+        public double WorkCompletionPercentage { get; private set; }
+        public string Title { get; }
+        public long  Reward { get; }
+        public DateTime StartTime { get; private set; }
         public bool TrySetStartTime(DateTime time)
         {
             if (!isStartTimeSet)
             {
-                if ( DateTime.Compare(time, ExpiryTime ) > 0)
+                if (DateTime.Compare(time, ExpiryTime) >= 0)
                     return false;
 
                 StartTime = time;
@@ -56,34 +52,45 @@ namespace Game.Model
         }
         public bool IsExpired(DateTime current)
         {
-            return DateTime.Compare(this.ExpiryTime, current) < 0 ? true : false;
+            return DateTime.Compare(ExpiryTime, current) < 0 ? true : false;
         }
-
-        public void UpdatePercentTimePassed(DateTime currentTime)
+        public double GetPercentageTimePassed(DateTime currentTime)
         {
             long elapsedTicks = currentTime.Ticks - StartTime.Ticks;
             long totalProjectDuration = ExpiryTime.Ticks - StartTime.Ticks;
 
-            this.PercentTimePassed = 100.0*(double)elapsedTicks / (double)totalProjectDuration;
+            return 100.0 * elapsedTicks / totalProjectDuration;
         }
-
-        public int DoWorkOnProject(int work)
+        public long DoWorkOnProject(long work)
         {
-            int unusedWork = (int)(work - WorkAmountRest);
+            long unusedWork = work - WorkAmountRemaining;
 
-            if (unusedWork > 0)
+            if (unusedWork >= 0)
             {
-                WorkAmountRest = 0;
-                IsDone = true;
+                WorkAmountRemaining = 0;
+                IsWorkCompleted = true;
             }
             else
             {
                 unusedWork = 0;
-                WorkAmountRest -= work;
+                WorkAmountRemaining -= work;
             }
-            this.CompletionPercent = 100*(double)(WorkAmountAssigned - WorkAmountRest)/(double)WorkAmountAssigned;
+
+            WorkCompletionPercentage = 100.0*(WorkAmountAssigned - WorkAmountRemaining)/WorkAmountAssigned;
             
             return unusedWork;
+        }
+        public override bool Equals(object obj)
+        {
+            Project d = obj as Project;
+
+            if (d == null) return false;
+
+            return d.Title == Title;
+        }
+        public override int GetHashCode()
+        {
+            return Title.GetHashCode();
         }
 
     }

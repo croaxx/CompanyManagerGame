@@ -63,14 +63,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DeveloperxUnitTesting.cs" />
-    <Compile Include="ExtensionMethodsxUnitTesting.cs" />
     <Compile Include="CompanyLogicxUnitTesting.cs" />
+    <Compile Include="DeveloperTests.cs" />
+    <Compile Include="ExtensionMethodsxUnitTesting.cs" />
     <Compile Include="GameTimerxUnitTesting.cs" />
-    <Compile Include="ProjectsDataServicexUnitTesting.cs" />
     <Compile Include="ProjectTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SoftwareCompanyTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

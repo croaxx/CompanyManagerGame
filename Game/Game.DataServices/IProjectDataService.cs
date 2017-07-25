@@ -2,8 +2,9 @@
 
 namespace Game.DataServices
 {
-    interface IProjectDataService
+    public interface IProjectDataService
     {
-        Project GetNextProject();
+        IProject GetNextProject();
+        bool IsNextProjectAvailable();
     }
 }

@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Threading.Tasks;
-
-namespace Game.Model
+﻿namespace Game.Model
 {
     public class GameEngine
     {
         public ITimer timer;
-
         public ICompany company;
-
         public ICompanyLogic logic;
 
         public GameEngine(ITimer timer, ICompany company, ICompanyLogic logic)
@@ -22,7 +16,7 @@ namespace Game.Model
 
         private void OnTimerUpdateEvent(object sender, TimerUpdateEventArgs e)
         {
-            this.company.UpdateCompanyStatus(e.TimerArgs, logic);
+            company.UpdateCompanyStatus(e.TimerArgs, logic);
         }
     }
 }

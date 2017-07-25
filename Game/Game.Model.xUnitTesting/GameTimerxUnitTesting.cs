@@ -9,52 +9,30 @@ namespace Game.Model.xUnitTesting
 {
     public class GameTimerxUnitTesting
     {
+        private ITimer timer;
+
         [Fact]
-        public void ITimerFiresAnEventWithSpecificEventArgs()
+        public void ITimerFiresAnEvent_WithSpecificDateTimeStoredInEventArgs()
         {
-            var timer = A.Fake<ITimer>();
+            timer = A.Fake<ITimer>();
             var expectedDate = new DateTime(2017, 5, 20);
-
-            DateTime date = DateTime.Now; // set any time
-
+            DateTime date = DateTime.MinValue;
             timer.TimerUpdateEvent += (o, e) => { date = e.TimerArgs; };
 
             timer.TimerUpdateEvent += Raise.With(new TimerUpdateEventArgs(new DateTime(2017, 5, 20)));
 
-            Assert.Equal(date, expectedDate);
+            date.Should().Be(expectedDate);
         }
 
         [Fact]
-        public void ITimerLaunchAsyncReturnsTask()
+        public void ITimerLaunchAsync_ReturnsTask()
         {
-            var timer = A.Fake<ITimer>();
+            timer = new GameTimer();
+            Func<Task> func = () => { return timer.RunTimerAsync(); };
 
-            bool isActionCalled = false;
-            Action act = () => { isActionCalled = true; };
+            var tsk = func();
 
-            A.CallTo(() => timer.LaunchAsync()).Returns(new Task(act));
-
-            var task = timer.LaunchAsync();
-
-            task.Start();
-            task.Wait();
-
-            isActionCalled.Should().Be(true);
-        }
-
-        [Fact]
-        public void RunTimerSynchronously_FiresEventAfterUpdateTime()
-        {
-            int updateFrequencyHz = 10;
-            int updateTimeInMilliseconds = 1000/updateFrequencyHz;
-            int eventFireCounter = 0;
-            var timer = new GameTimer(updateFrequencyHz);
-            timer.TimerUpdateEvent += ( o, e ) => { eventFireCounter++; };
-
-            var task = Task.Factory.StartNew(() => { timer.RunTimerSynchronously(); });
-
-            Thread.Sleep(updateTimeInMilliseconds);
-            eventFireCounter.Should().NotBe(0);
+            tsk.Should().NotBeNull();
         }
 
         [Fact]
@@ -63,10 +41,10 @@ namespace Game.Model.xUnitTesting
             int updateFrequencyHz = 10;
             int updateTimeInMilliseconds = 1000/updateFrequencyHz;
             int eventFireCounter = 0;
-            var timer = new GameTimer(updateFrequencyHz);
+            timer = new GameTimer(updateFrequencyHz);
             timer.TimerUpdateEvent += ( o, e ) => { eventFireCounter++; };
 
-            var task = timer.LaunchAsync();
+            var task = timer.RunTimerAsync();
 
             Thread.Sleep(updateTimeInMilliseconds);
             eventFireCounter.Should().NotBe(0);

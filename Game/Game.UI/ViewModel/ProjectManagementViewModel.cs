@@ -2,18 +2,17 @@
 using Game.DataServices;
 using System.Windows.Input;
 using Game.UI.Command;
-using Game.UI.Utility;
 
 namespace Game.UI.ViewModel
 {
     public class ProjectManagementViewModel : ViewModelBase
     {
-        public ProjectsDataService ProjectsDataService { get; private set; }
+        private IProjectDataService projectsDataService { get; }
 
         public GameEngine engine;
         
-        private Project offeredProject;
-        public Project OfferedProject
+        private IProject offeredProject;
+        public IProject OfferedProject
         { 
             get
             {
@@ -29,41 +28,36 @@ namespace Game.UI.ViewModel
         public ICommand DeclineProjectCommand { get; set; }
         public ICommand AcceptProjectCommand { get; set; }
 
-        public ProjectManagementViewModel(ProjectsDataService dataService, GameEngine engine)
+        public ProjectManagementViewModel(IProjectDataService dataService, GameEngine engine)
         {
-            this.ProjectsDataService = dataService;
+            projectsDataService = dataService;
             this.engine = engine;
-            this.OfferedProject = dataService.GetNextProject();
+            OfferedProject = dataService.GetNextProject();
             LoadCommands();
         }
-
         private void LoadCommands()
         {
             DeclineProjectCommand = new DelegateCommand(LoadNextProject, CanLoadNextProject);
             AcceptProjectCommand = new DelegateCommand(AcceptProject, CanAcceptProject);
         }
-
         private bool CanAcceptProject(object arg)
         {
             return OfferedProject != null;
         }
-
         private void AcceptProject(object obj)
         {
-            this.engine.company.TryAcceptNewProject(offeredProject, this.engine.timer.GetCurrentTime());
+            engine.company.TryAcceptNewProject(offeredProject, engine.timer.GetCurrentTime());
             
-            if (this.ProjectsDataService.IsNextProjectAvailable())
-                this.OfferedProject = this.ProjectsDataService.GetNextProject();
+            if (projectsDataService.IsNextProjectAvailable())
+                OfferedProject = projectsDataService.GetNextProject();
         }
-
         private bool CanLoadNextProject(object arg)
         {
-            return ProjectsDataService.IsNextProjectAvailable();
+            return projectsDataService.IsNextProjectAvailable();
         }
-
         private void LoadNextProject(object obj)
         {
-            this.OfferedProject = this.ProjectsDataService.GetNextProject();
+            OfferedProject = projectsDataService.GetNextProject();
         }
     }
 }

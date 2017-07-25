@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Threading.Tasks;
 
 namespace Game.Model
 {
@@ -15,13 +13,13 @@ namespace Game.Model
         long GetCompanyBudget();
         int GetNumberOfProjects();
         int GetNumberOfDevelopers();
-        bool TryAcceptNewProject(Project project, DateTime startTime);
-        bool TryHireDeveloper(Developer d);
-        void QuitProject(string title);
-        IList<Project> GetProjects();
-        IList<Developer> GetDevelopers();
+        bool TryAcceptNewProject(IProject project, DateTime startTime);
+        bool TryHireDeveloper(IDeveloper d);
+        bool TryQuitProjectAndPunishBudget(IProject title);
+        IEnumerable<IProject> GetProjects();
+        IEnumerable<IDeveloper> GetDevelopers();
         void UpdateCompanyStatus(DateTime time, ICompanyLogic logic);
-        void ResignDeveloperAfterMonths(Developer d, DateTime currentime, int monthsspan);
+        void SetDeveloperResignationDateAfterMonths(IDeveloper d, DateTime currentime, int monthsspan);
         DateTime GetNextSalaryPaymentDate();
     }
 }

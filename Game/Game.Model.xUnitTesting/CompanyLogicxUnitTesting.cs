@@ -1,184 +1,168 @@
-﻿using FakeItEasy;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Xunit;
 using System;
-using System.Collections.Concurrent;
 using FluentAssertions;
 using System.Linq;
+using FakeItEasy;
 
 namespace Game.Model.xUnitTesting
 {
     public class CompanyLogicxUnitTesting
     {
-        private ConcurrentDictionary<Developer, Developer> GenerateConcurrentDictionaryOfThreeDevelopers(IList<DateTime> resignTimes)
+        private ICompanyLogic logic;
+
+        private EntityRepository<IDeveloper> GenerateRepositoryOfDevelopers(int devs, 
+                                                                           IList<int> salaries, 
+                                                                           IList<DateTime> resignTimes,
+                                                                           IList<int> productivities)
         {
-            var d1 = new Developer("Bryan", DateTime.Now, 5500, 100);
-            d1.Resign(resignTimes[0]);
-            var d2 = new Developer("Thomas", DateTime.Now, 6500, 100);
-            d2.Resign(resignTimes[1]);
-            var d3 = new Developer("Luke", DateTime.Now, 7300, 100);
-            d3.Resign(resignTimes[2]);
+            var devRepo = new EntityRepository<IDeveloper>();
 
-            var dict = new ConcurrentDictionary<Developer, Developer>();
-            dict.TryAdd(d1, d1);
-            dict.TryAdd(d2, d2);
-            dict.TryAdd(d3, d3);
+            for (int i = 0; i < devs; ++i)
+            {
+                string name = Guid.NewGuid().ToString();
+                var birthDate  = DateTime.MinValue;
 
-            return dict;
+                int salary = salaries == null ? 0 : salaries[i];
+                int productivity = productivities == null ? 0 : productivities[i];
+
+                var dev = new Developer(name, birthDate, salary, productivity);
+
+                if (resignTimes != null)
+                    dev.Resign(resignTimes[i]);
+
+                devRepo.TryAdd(dev);
+            }
+
+            return devRepo;
         }
 
-        private ConcurrentDictionary<Developer, Developer> GenerateConcurrentDictionaryOfFourDevelopers()
+        [Theory]
+        [InlineData(2019, 3, 14, 0)]
+        [InlineData(2018, 12, 5, 1)]
+        [InlineData(2017, 2, 7, 2)]
+        [InlineData(2017, 2, 6, 3)]
+        public void RemoveResignedDevelopers_Test(int currentYear, int currentMonth,
+                                                  int currentDay, int expectedNumOfDevsLeft)
         {
-            var d1 = new Developer("Bryan", DateTime.Now, 15500, 100);
-            var d2 = new Developer("Thomas", DateTime.Now, 6500, 100);
-            var d3 = new Developer("Luke", DateTime.Now, 17500, 100);
-            var d4 = new Developer("Robert", DateTime.Now, 7000, 100);
+            logic = new CompanyLogic();
+            var resignTimes = new List<DateTime> { { new DateTime(2017, 2, 7) }, { new DateTime(2018, 12, 5) }, { new DateTime(2019, 3, 14) } };
+            var repo = GenerateRepositoryOfDevelopers(resignTimes.Count, null, resignTimes, null);
+            var currentTime = new DateTime(currentYear, currentMonth, currentDay);
 
-            var dict = new ConcurrentDictionary<Developer, Developer>();
-            dict.TryAdd(d1, d1);
-            dict.TryAdd(d2, d2);
-            dict.TryAdd(d3, d3);
-            dict.TryAdd(d4, d4);
+            logic.RemoveResignedDevelopers(repo, currentTime);
 
-            return dict;
-        }
-
-        [Fact]
-        public void RemoveResignedDevelopers_RemovesTwoOutOfTreeEmployees()
-        {
-            // arrange
-            var logic = new CompanyLogic();
-            var resignTimes = new List<DateTime>
-            { 
-                { new DateTime(2017, 2, 5) },
-                { new DateTime(2018, 12, 5) },
-                { new DateTime(2019, 3, 5) }
-            };
-            var dict = GenerateConcurrentDictionaryOfThreeDevelopers(resignTimes);
-            int expectedNumberOfDevs = 1;
-
-            // act
-            logic.RemoveResignedDevelopers(dict, new DateTime(2018, 12, 7));
-
-            //assert
-            dict.Count.Should().Be(expectedNumberOfDevs);
+            repo.Count.Should().Be(expectedNumOfDevsLeft);
         }
 
         [Fact]
-        public void PaySalariesAndRemoveUnpaidDevs_ReducesTheBudgetBySalariesSum()
+        public void PaySalariesAndRemoveUnpaidDevs_ReducesBudgetBySalariesSum_And_DoesNotChangeDevsCount()
         {
-            // arrange
-            var logic = new CompanyLogic();
-            var dict = GenerateConcurrentDictionaryOfFourDevelopers();
-            long salarySum = dict.Sum(x => x.Value.MonthlySalary);
+            logic = new CompanyLogic();
+            int devs = 4;
+            var salaries = new List<int> { 15500, 6500, 17500, 7000 };
+            var repo = GenerateRepositoryOfDevelopers(devs, salaries, null, null);
             long budget = 50000;
-            long expectedRemainBudget = budget - salarySum;
-            
-            // act
-            logic.PaySalariesAndRemoveUnpaidDevs(dict, ref budget);
+            long expectedRemainBudget = budget - salaries.Sum(x => x);
 
-            // assert
+            logic.PaySalariesAndRemoveUnpaidDevs(repo, ref budget);
+
             budget.Should().Be(expectedRemainBudget);
-            dict.Count.Should().Be(4); // nobody leaves
+            repo.Count.Should().Be(devs); // nobody leaves
         }
 
         [Fact]
-        public void PaySalariesAndRemoveUnpaidDevs_TwoDevelopersLeaveDue()
+        public void PaySalariesAndRemoveUnpaidDevs_TwoDevelopersLeaveDueToInsufficientBudget()
         {
-            // arrange
-            var logic = new CompanyLogic();
-            var dict = GenerateConcurrentDictionaryOfFourDevelopers();
+            logic = new CompanyLogic();
+            var salaries = new List<int> { 15500, 6500, 17500, 7000 };
+            var repo = GenerateRepositoryOfDevelopers(salaries.Count, salaries, null, null);
             long budget = 13500;
-            
-            // act
-            logic.PaySalariesAndRemoveUnpaidDevs(dict, ref budget);
+            int expectedDevsAfterPayment = 2;
 
-            // assert
-            dict.Count.Should().Be(2);
+            logic.PaySalariesAndRemoveUnpaidDevs(repo, ref budget);
+
+            repo.Count.Should().Be(expectedDevsAfterPayment);
         }
 
-        private ConcurrentDictionary<Developer, Developer> GenerateFourDevelopersWithProductivities(IList<int> productivities)
+        private EntityRepository<IProject> GenerateRepositoryOfProjects(int projCount,
+                                                           IList<int> workAmountAssigned,
+                                                           IList<DateTime> expiryTimes,
+                                                           IList<long> rewards)
         {
-            var d1 = new Developer("Bryan", DateTime.Now, 15500, productivities[0]);
-            var d2 = new Developer("Thomas", DateTime.Now, 6500, productivities[1]);
-            var d3 = new Developer("Luke", DateTime.Now, 17500, productivities[2]);
-            var d4 = new Developer("Robert", DateTime.Now, 7000, productivities[3]);
+            var projRepo = new EntityRepository<IProject>();
 
-            var dict = new ConcurrentDictionary<Developer, Developer>();
-            dict.TryAdd(d1, d1);
-            dict.TryAdd(d2, d2);
-            dict.TryAdd(d3, d3);
-            dict.TryAdd(d4, d4);
+            for (int i = 0; i < projCount; ++i)
+            {
+                string name = Guid.NewGuid().ToString();
 
-            return dict;
-        }
-        
-        private ConcurrentDictionary<string, Project> GenerateThreeProjectsWithAssignedWorkAmount(List<int> workAmount)
-        {
-            var d1 = new Project("Youtube Services", DateTime.MinValue, 1000, workAmount[0]);
-            var d2 = new Project("BWM database", DateTime.MinValue, 1000, workAmount[1]);
-            var d3 = new Project("Bank security challange", DateTime.MinValue, 1000, workAmount[1]);
+                int workAssigned = workAmountAssigned == null ? 0 : workAmountAssigned[i];
+                DateTime expiry = expiryTimes == null ? DateTime.MinValue : expiryTimes[i];
+                long reward = rewards == null ? 0 : rewards[i];
 
+                var p = new Project(name, expiry, reward, workAssigned);
 
-            var dict = new ConcurrentDictionary<string, Project>();
-            dict.TryAdd(d1.Title, d1);
-            dict.TryAdd(d2.Title, d2);
-            dict.TryAdd(d3.Title, d3);
+                projRepo.TryAdd(p);
+            }
 
-            return dict;
+            return projRepo;
         }
 
-        [Fact] public void DoWorkOnTheProjects_Test()
+        [Fact]
+        public void PerformOneWorkDayOnProjects_Test()
         {
-            // arrange
-            var developers = GenerateFourDevelopersWithProductivities(new List<int> {2001, 1303, 1200, 4125 });
-            var projects = GenerateThreeProjectsWithAssignedWorkAmount(new List<int> {3700, 45000, 11000});
+            logic = new CompanyLogic();
+            int devsCount = 3;
+            var salaries = new List<int> { 15500, 6500, 17500 };
+            var productivities = new List<int> { 1053, 45007, 11011 };
+            var devsRepo = GenerateRepositoryOfDevelopers(devsCount, salaries, null, productivities);
+            int projCount = 3;
+            var workAmounts = new List<int> { 3700, 45000, 11000 };
+            var projectsRepo = GenerateRepositoryOfProjects(projCount, workAmounts, null, null);
+            int productivitySum = productivities.Sum(x => x);
+            int expectedRoundOffWorkDone = projectsRepo.Count * (productivitySum / projectsRepo.Count);
+
+            logic.PerformOneWorkDayOnProjects(devsRepo, projectsRepo);
+
+            projectsRepo.Sum(x => x.WorkAmountAssigned - x.WorkAmountRemaining).Should().Be(expectedRoundOffWorkDone);
+        }
+
+        [Fact]
+        public void PerformOneWorkDayOnProjects_SetsIsDoneStatusOfTwoProjects_ToTrue()
+        {
+            logic = new CompanyLogic();
+            int devsCount = 4;
+            var productivities = new List<int> { 2002, 1301, 1205, 4125 };
+            var devsRepo = GenerateRepositoryOfDevelopers(devsCount, null, null, productivities);
+            int projCount = 4;
+            var workAmounts = new List<int> { 1053, 45000, 11000, 1600 };
+            var projectsRepo = GenerateRepositoryOfProjects(projCount, workAmounts, null, null);
+            int expectedFinishedProjects = 2;
+
+            logic.PerformOneWorkDayOnProjects(devsRepo, projectsRepo); // projects with 1053 and 1600 should be finished
+
+            projectsRepo.Where(x => x.IsWorkCompleted == true).ToList().Count.Should().Be(expectedFinishedProjects);
+        }
+
+        [Fact]
+        public void RemoveFinishedProjectAndGetTheRestReward_Test()
+        {
             var logic = new CompanyLogic();
-            int productivitySum = developers.Sum(x => x.Value.CodeLinesPerDay);
-            
-            int expectedRoundOffWorkDone = projects.Count*(productivitySum/projects.Count);
-            // act
-            logic.PerformOneWorkDayOnProjects(developers, projects);
+            var projectsRepo = new EntityRepository<IProject>();
+            var project = A.Fake<IProject>();
+            A.CallTo(() => project.StartTime).Returns(new DateTime(2011, 5, 13));
+            A.CallTo(() => project.ExpiryTime).Returns(new DateTime(2017, 7, 22));
+            var currentTime = new DateTime(2015, 5, 28);
+            A.CallTo(() => project.IsWorkCompleted).Returns(true);
+            long projectReward = 15257;
+            A.CallTo(() => project.Reward).Returns(projectReward);
+            projectsRepo.TryAdd(project);
+            long rewardReceived = logic.GetRewardReceivedFromProjectAtTime(project, currentTime);
 
-            // assert
-            projects.Sum( x => x.Value.WorkAmountAssigned - x.Value.WorkAmountRest).Should().Be(expectedRoundOffWorkDone);
+            logic.RemoveFinishedProjectAndGetTheRestReward(projectsRepo, currentTime, ref rewardReceived);
+
+            projectsRepo.Count.Should().Be(0);
+            rewardReceived.Should().Be(projectReward);
         }
-
-        [Fact] public void DoWorkOnTheProjects_SetsIsDoneStatusOfFirstProject_ToTrue()
-        {
-            // arrange
-            var developers = GenerateFourDevelopersWithProductivities(new List<int> {2002, 1301, 1205, 4125 });
-            var projects = GenerateThreeProjectsWithAssignedWorkAmount(new List<int> {1053, 45000, 11000});
-            var logic = new CompanyLogic();
-            int productivitySum = developers.Sum(x => x.Value.CodeLinesPerDay);
-            
-            int expectedRoundOffWorkDone = projects.Count*(productivitySum/projects.Count);
-            // act
-            logic.PerformOneWorkDayOnProjects(developers, projects);
-
-            // assert
-            var project1 = projects.GetEnumerator();
-            project1.MoveNext();
-            project1.Current.Value.IsDone.Should().Be(true);
-            projects.Sum( x => x.Value.WorkAmountAssigned - x.Value.WorkAmountRest).Should().Be(expectedRoundOffWorkDone);
-        }
-
-        [Fact] public void DoWorkOnTheProjects_SetsIsDoneStatusOfAllProjects_ToTrue_AndCompetionStatusToOne()
-        {
-            // arrange
-            var developers = GenerateFourDevelopersWithProductivities(new List<int> {2002, 1301, 1205, 41250 });
-            var projects = GenerateThreeProjectsWithAssignedWorkAmount(new List<int> {1053, 45000, 11000});
-            var logic = new CompanyLogic();
-            int productivitySum = developers.Sum(x => x.Value.CodeLinesPerDay);
-            
-            int expectedRoundOffWorkDone = projects.Count*(productivitySum/projects.Count);
-            // act
-            logic.PerformOneWorkDayOnProjects(developers, projects);
-
-            // assert
-            projects.Values.Select(x => x.IsDone == true).ToList().Count.Should().Be(3);
-            projects.Values.Select(x => x.CompletionPercent == 100).ToList().Count.Should().Be(3);
-        }
-
     }
 }

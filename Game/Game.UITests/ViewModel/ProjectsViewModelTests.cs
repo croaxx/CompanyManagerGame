@@ -15,7 +15,7 @@ namespace Game.UITests.ViewModel
 
     public class ProjectDataProviderMock : IProjectDataProvider
     {
-        public IEnumerable<Project> GetAllProjects()
+        public IEnumerable<IProject> GetAllProjects()
         {
             yield return new Project(new DateTime(2018,11,5));
             yield return new Project(new DateTime(2017,10,4));

@@ -8,48 +8,38 @@ namespace Game.Model
     {
         public event EventHandler<TimerUpdateEventArgs> TimerUpdateEvent;
         
-        public DateTime StartTime { get; private set; }
-
-        public int UpdateTimeFrequencyHz { get; private set; }
-        
-        public DateTime CurrentGameTime{ get; private set; }
-
         private double timeSpeedFactor;
-
-        public double TimeSpeedFactor { get { return timeSpeedFactor;} }
-
+        public DateTime StartTime { get; }
+        public int UpdateFrequencyHz { get; }
+        public DateTime CurrentGameTime{ get; private set; }
         public GameTimer(int updateTimeFrequencyHz = 1, double speedFactor = 1)
         {
-            this.StartTime = DateTime.Now;
-            this.CurrentGameTime = this.StartTime;
-            this.timeSpeedFactor = speedFactor;
-            this.UpdateTimeFrequencyHz = updateTimeFrequencyHz;
+            StartTime = DateTime.Now;
+            CurrentGameTime = StartTime;
+            timeSpeedFactor = speedFactor;
+            UpdateFrequencyHz = updateTimeFrequencyHz;
         }
-
         public void RunTimerSynchronously()
         {
-            int waitTimeInMilliseconds = 1000*UpdateTimeFrequencyHz;
+            long waitTimeInMilliseconds = 1000*UpdateFrequencyHz;
             
             for (;;)
             {
                 TimerUpdateEvent?.Invoke(this, new TimerUpdateEventArgs(CurrentGameTime));
 
-                Thread.Sleep(waitTimeInMilliseconds);
+                Thread.Sleep((int)waitTimeInMilliseconds);
                
-                CurrentGameTime = this.CurrentGameTime.AddMilliseconds((long)TimeSpeedFactor*waitTimeInMilliseconds);
+                CurrentGameTime = CurrentGameTime.AddMilliseconds(timeSpeedFactor*waitTimeInMilliseconds);
             }
         }
-
-        public Task LaunchAsync()
+        public Task RunTimerAsync()
         {
             return Task.Factory.StartNew( () =>  RunTimerSynchronously() );
         }
-
         public void SetTimeSpeedFactor(double factor)
         {
-            this.timeSpeedFactor = factor;
+            Interlocked.Exchange(ref timeSpeedFactor, factor);
         }
-
         public DateTime GetCurrentTime()
         {
             return CurrentGameTime;

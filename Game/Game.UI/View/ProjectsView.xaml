@@ -21,27 +21,27 @@
                         <StackPanel Orientation="Vertical">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Project title: "></TextBlock>
-                                <TextBlock Text="{Binding Title}"></TextBlock>
+                                <TextBlock Text="{Binding Project.Title}"></TextBlock>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Started: "></TextBlock>
-                                <TextBlock Text="{Binding StartTime, StringFormat='dd/MM/yyyy HH:mm::ss'}"></TextBlock>
+                                <TextBlock Text="{Binding Project.StartTime, StringFormat='dd/MM/yyyy HH:mm::ss'}"></TextBlock>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Due: "></TextBlock>
-                                <TextBlock Text="{Binding ExpiryTime, StringFormat='dd/MM/yyyy HH:mm::ss'}"></TextBlock>
+                                <TextBlock Text="{Binding Project.ExpiryTime, StringFormat='dd/MM/yyyy HH:mm::ss'}"></TextBlock>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Reward: "></TextBlock>
-                                <TextBlock Text="{Binding Reward, Converter={StaticResource localPriceConverter}}"></TextBlock>
+                                <TextBlock Text="{Binding Project.Reward, Converter={StaticResource localPriceConverter}}"></TextBlock>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="% time passed: "></TextBlock>
-                                <ProgressBar Width ="100" Minimum="0" Maximum="100" Value="{Binding PercentTimePassed, Mode=OneWay}" Foreground="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Value, Converter={StaticResource ProgressForegroundConverter}}" />
+                                <ProgressBar Width ="100" Minimum="0" Maximum="100" Value="{Binding PercentageTimePassed, Mode=OneWay}" Foreground="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Value, Converter={StaticResource ProgressForegroundConverter}}" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Work done: "></TextBlock>
-                                <ProgressBar Width ="100" Minimum="0" Maximum="100" Value="{Binding CompletionPercent, Mode=OneWay}" Foreground="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Value}" />
+                                <ProgressBar Width ="100" Minimum="0" Maximum="100" Value="{Binding Project.WorkCompletionPercentage, Mode=OneWay}" Foreground="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Value}" />
                             </StackPanel>
                             <StackPanel>
                                 <Button Command="{Binding ElementName=ListView1, Path=DataContext.RemoveProjectCommand}" CommandParameter="{Binding}" Width ="40" HorizontalAlignment="Center" Content="X"></Button>

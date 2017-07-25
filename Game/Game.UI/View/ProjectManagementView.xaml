@@ -17,33 +17,33 @@
         
         <StackPanel HorizontalAlignment="Center">
 
-            <Label Content="Project Description" HorizontalAlignment="Center"/>
+            <Label FontSize="18" Content="Project Description" HorizontalAlignment="Center"/>
 
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Title: "/>
-                <TextBlock Width ="200" Text="{Binding OfferedProject.Title}"></TextBlock>
+                <TextBlock FontSize="18" Text="Title: "/>
+                <TextBlock FontSize="18" Width ="200" Text="{Binding OfferedProject.Title}"></TextBlock>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Due: "/>
-                <TextBlock Width ="200" Text="{Binding OfferedProject.ExpiryTime, StringFormat='dd/MM/yyyy'}"></TextBlock>
+                <TextBlock FontSize="18" Text="Due: "/>
+                <TextBlock FontSize="18" Width ="200" Text="{Binding OfferedProject.ExpiryTime, StringFormat='dd/MM/yyyy'}"></TextBlock>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Reward: "/>
-                <TextBlock Width ="200" Text="{Binding OfferedProject.Reward, Converter={StaticResource localPriceConverter}}"></TextBlock>
+                <TextBlock FontSize="18" Text="Reward: "/>
+                <TextBlock FontSize="18" Width ="200" Text="{Binding OfferedProject.Reward, Converter={StaticResource localPriceConverter}}"></TextBlock>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Work Amount: "/>
-                    <TextBlock Width ="200" Text="{Binding OfferedProject.WorkAmountAssigned, Converter={StaticResource workAmountConverter}}"></TextBlock>
+                    <TextBlock FontSize="18" Text="Work Amount: "/>
+                    <TextBlock FontSize="18" Width ="200" Text="{Binding OfferedProject.WorkAmountAssigned, Converter={StaticResource workAmountConverter}}"></TextBlock>
                 </StackPanel>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button Content="Accept" Width="50" Height="20" Command="{Binding AcceptProjectCommand}"></Button>
-                <Button Margin ="10,0,0,0"  Content="Decline" Width="50" Height="20" Command="{Binding DeclineProjectCommand}"></Button>
+                <Button FontSize="18" Content="Accept" Width="70" Height="30" Command="{Binding AcceptProjectCommand}"></Button>
+                <Button FontSize="18" Margin ="10,0,0,0"  Content="Decline" Width="70" Height="30" Command="{Binding DeclineProjectCommand}"></Button>
             </StackPanel>
 
         </StackPanel>

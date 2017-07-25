@@ -1,73 +1,76 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Game.Model
 {
-    public class NextSalaryPaymentEventArgs : EventArgs
+    public class EntityRepository<T> : IEnumerable<T>
     {
-        public DateTime DateTimeArgs { get; }
-        public NextSalaryPaymentEventArgs(DateTime args)
+        private ConcurrentDictionary<T, T> entity;
+        public EntityRepository()
         {
-            DateTimeArgs = args;
+            entity = new ConcurrentDictionary<T, T>();
+        }
+        public ICollection<T> Values { get { return entity.Values;} }
+        public int Count { get { return entity.Count;} }
+        public IEnumerator<T> GetEnumerator()
+        {
+            return entity.Values.GetEnumerator();
+        }
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+        public bool TryRemove(T c)
+        {
+            return entity.TryRemove(c, out T value);
+        }
+        public bool TryAdd(T proj)
+        {
+            return entity.TryAdd(proj, proj);
         }
     }
 
     public class SoftwareCompany : ICompany
     {
-        private ConcurrentDictionary<string, Project> projects;
-        private ConcurrentDictionary<Developer, Developer> developers;
-
         public event EventHandler<EventArgs> ProjectsCollectionChange;
         public event EventHandler<EventArgs> DevelopersCollectionChange;
         public event EventHandler<EventArgs> BudgetChange;
 
-        public string Name { get; private set; }
-        public DateTime FoundationDate { get; private set; }
-        public DateTime NextSalaryPaymentDate { get; private set; }
-
+        private EntityRepository<IProject> projects;
+        private EntityRepository<IDeveloper> developers;
         private long currentBudget;
+
+        public string Name { get; }
+        public DateTime FoundationDate { get; }
+        public DateTime NextSalaryPaymentDate { get; private set; }
         public DateTime LastBookedTime { get; private set; }
-        private void SetNextSalaryPaymentDate()
+        public SoftwareCompany(int budget = 200000)
         {
-            this.NextSalaryPaymentDate = this.NextSalaryPaymentDate.IncrementMonths(1);
+            projects = new EntityRepository<IProject>();
+            developers = new EntityRepository<IDeveloper>();;
+            currentBudget = budget;
         }
-
-        public SoftwareCompany()
-        {
-            this.projects = new ConcurrentDictionary<string, Project>();
-            this.developers = new ConcurrentDictionary<Developer, Developer>();
-            this.currentBudget = 100000;
-        }
-
         private void SetFirstSalaryPaymentDateTo(int day)
         {
-            var date = FoundationDate.IncrementMonths(1);
-
-            this.NextSalaryPaymentDate = date.AddDays(day - date.Day);
+            var date = FoundationDate.TryIncrementMonths(1).Value;
+            NextSalaryPaymentDate = date.AddDays(day - date.Day);
         }
-
         public SoftwareCompany(DateTime time, int salaryDay = 25) : this()
         {
-            this.FoundationDate = time;
-            this.LastBookedTime = this.FoundationDate;
+            FoundationDate = time;
+            LastBookedTime = FoundationDate;
             SetFirstSalaryPaymentDateTo(salaryDay);
         }
-
-        private void OnSalaryPayment(object sender, EventArgs e)
-        {
-            SetNextSalaryPaymentDate();
-        }
-
-        public bool TryAcceptNewProject(Project proj, DateTime startTime)
+        public bool TryAcceptNewProject(IProject proj, DateTime startTime)
         {
             bool result = proj.TrySetStartTime(startTime);
 
             if (result)
             {
-                bool status = projects.TryAdd(proj.Title, proj);
+                bool status = projects.TryAdd(proj);
 
                 if (status)
                     ProjectsCollectionChange?.Invoke(this, new EventArgs());
@@ -77,105 +80,84 @@ namespace Game.Model
             else
                 return false;
         }
-
-        public void FireDeveloperByFullNameAndBirthdate(string fullname)
-        {
-            //developers.Where( x => x.FullName == fullname ).
-        }
-
         public string GetCompanyName()
         {
             return Name;
         }
-
         public long GetCompanyBudget()
         {
-            return currentBudget;
+            return Interlocked.Read(ref currentBudget);
         }
-
         public int GetNumberOfProjects()
         {
             return projects.Count;
         }
-
-        public void QuitProject(string title)
+        public bool TryQuitProjectAndPunishBudget(IProject proj)
         {
-            projects.TryRemove(title, out Project value);
-            ProjectsCollectionChange?.Invoke(this, new EventArgs());
-        }
-
-        public IList<Project> GetProjects()
-        {
-            var p = new List<Project>();
-
-            foreach (var item in projects)
+            bool isRemoved = projects.TryRemove(proj);
+            
+            if (isRemoved)
             {
-                p.Add(item.Value);
+                Interlocked.Add(ref currentBudget, -proj.Reward);
+                BudgetChange?.Invoke(this, new EventArgs());
+                return true;
             }
 
-            return p;
+            return false;
         }
-
-        public IList<Developer> GetDevelopers()
+        public IEnumerable<IProject> GetProjects()
         {
-            var d = new List<Developer>();
-
-            foreach (var item in developers)
-            {
-                d.Add(item.Key);
-            }
-
-            return d;
+            return projects.Values;
         }
-
+        public IEnumerable<IDeveloper> GetDevelopers()
+        {
+            return developers.Values;
+        }
         public void UpdateCompanyStatus(DateTime currentTime, ICompanyLogic logic)
         {
-            while (LastBookedTime.Date != currentTime.Date)
+            while (LastBookedTime.Date < currentTime.Date)
             {
                 if (LastBookedTime.Date == NextSalaryPaymentDate.Date)
                 {
                     logic.PaySalariesAndRemoveUnpaidDevs(developers, ref currentBudget);
-                    SetNextSalaryPaymentDate();
+                    NextSalaryPaymentDate = NextSalaryPaymentDate.TryIncrementMonths(1).Value;
                 }
                 
-                logic.RemoveExpiredProjectsAndUpdateTimeStatus(projects, LastBookedTime);
+                logic.PunishBudgetForExpiredProject(projects, LastBookedTime, ref currentBudget);
+                logic.RemoveExpiredProjectsAndUpdateTimeCompletionStatus(projects, LastBookedTime);
                 logic.RemoveResignedDevelopers(developers, LastBookedTime);
                 logic.PerformOneWorkDayOnProjects(developers, projects);
+                logic.GetRevenueFromOneWorkDay(projects, ref currentBudget);
+                logic.RemoveFinishedProjectAndGetTheRestReward(projects, LastBookedTime, ref currentBudget);
 
-                LastBookedTime = LastBookedTime.AddHours(24);
+                LastBookedTime = LastBookedTime.AddDays(1);
             }
 
             ProjectsCollectionChange?.Invoke(this, new EventArgs());
             DevelopersCollectionChange?.Invoke(this, new EventArgs());
             BudgetChange?.Invoke(this, new EventArgs());
         }
-
-        public bool TryHireDeveloper(Developer d)
+        public bool TryHireDeveloper(IDeveloper d)
         {
-            bool status = developers.TryAdd(d, d);
+            bool status = developers.TryAdd(d);
 
             if (status)
                 DevelopersCollectionChange?.Invoke(this, new EventArgs());
             
             return status;
         }
-
         public int GetNumberOfDevelopers()
         {
-            return this.developers.Count;
+            return developers.Count;
         }
-
-        public void ResignDeveloperAfterMonths(Developer d, DateTime currenttime, int monthsspan)
+        public void SetDeveloperResignationDateAfterMonths(IDeveloper d, DateTime currenttime, int monthsspan)
         {
             d.Resign(currenttime.AddMonths(monthsspan));
-            //developers.TryRemove(d, out object value);
-            developers.AddOrUpdate(d, d, (key, oldValue) => d);
             DevelopersCollectionChange?.Invoke(this, new EventArgs());
         }
-
         public DateTime GetNextSalaryPaymentDate()
         {
-            return this.NextSalaryPaymentDate;
+            return NextSalaryPaymentDate;
         }
     }
 }

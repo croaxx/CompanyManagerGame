@@ -15,7 +15,7 @@ namespace Game.Model
     public interface ITimer
     {
         event EventHandler<TimerUpdateEventArgs> TimerUpdateEvent;
-        Task LaunchAsync();
+        Task RunTimerAsync();
         void SetTimeSpeedFactor(double factor);
         DateTime GetCurrentTime();
     }

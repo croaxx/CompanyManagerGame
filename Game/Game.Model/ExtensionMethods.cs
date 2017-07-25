@@ -4,7 +4,7 @@ namespace Game.Model
 {
     public static class ExtensionMethods
     {
-        public static DateTime IncrementMonths(this DateTime time, int months)
+        public static DateTime? TryIncrementMonths(this DateTime time, int months)
         {
             int month = time.Month;
             int year = time.Year;
@@ -20,7 +20,14 @@ namespace Game.Model
                     ++month;
             }
 
-            return new DateTime(year, month, time.Day, time.Hour, time.Minute, time.Second);
+            try
+            {
+                return new DateTime(year, month, time.Day, time.Hour, time.Minute, time.Second);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
     }
 }

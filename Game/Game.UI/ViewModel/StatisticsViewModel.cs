@@ -5,21 +5,16 @@ namespace Game.UI.ViewModel
 {
     public class StatisticsViewModel : ViewModelBase
     {
-        public GameEngine engine { get; private set; }
-        
-        public DateTime FoundationDate { get; private set;}
-
-        private int timeSpeedFactor = 1;
+        public GameEngine engine { get; }
+        public DateTime FoundationDate { get; }
 
         public DateTime nextSalaryPaymentDate;
-
         public DateTime NextSalaryPaymentDate
         {
             get
             {
                 return nextSalaryPaymentDate;
             }
-
             set
             {
                 nextSalaryPaymentDate = value;
@@ -28,7 +23,6 @@ namespace Game.UI.ViewModel
         }
 
         private long budgetCurrent;
-
         public long BudgetCurrent
         { 
             get
@@ -43,6 +37,7 @@ namespace Game.UI.ViewModel
             }
         }
 
+        private int timeSpeedFactor;
         public int TimeSpeedFactor 
         {
             get
@@ -53,12 +48,11 @@ namespace Game.UI.ViewModel
             {
                 timeSpeedFactor = value;
                 OnPropertyChanged("TimeSpeedFactor");
-                this.engine.timer.SetTimeSpeedFactor(timeSpeedFactor);
+                engine.timer.SetTimeSpeedFactor(timeSpeedFactor);
             }
         }
 
         private int numberOfProjects;
-
         public int NumberOfProjects
         { 
             get
@@ -74,7 +68,6 @@ namespace Game.UI.ViewModel
         }
         
         private int numberOfDevelopers;
-
         public int NumberOfDevelopers
         { 
             get
@@ -88,7 +81,6 @@ namespace Game.UI.ViewModel
             }
         }
 
-
         private DateTime currentGameTime;
         public DateTime CurrentGameTime
         {
@@ -96,37 +88,35 @@ namespace Game.UI.ViewModel
             {
                 return currentGameTime;
             }
-
             set
             {
                 currentGameTime = value;
                 OnPropertyChanged("CurrentGameTime");
             }
         }
-
-        public StatisticsViewModel(GameEngine engine, ITimer timer)
+        public StatisticsViewModel(GameEngine engine)
         {
             this.engine = engine;
+            TimeSpeedFactor = 1;
             this.engine.timer.SetTimeSpeedFactor(TimeSpeedFactor);
-            this.engine.timer.LaunchAsync();
+            this.engine.timer.RunTimerAsync();
 
-            this.FoundationDate = this.engine.timer.GetCurrentTime();
-            this.BudgetCurrent = this.engine.company.GetCompanyBudget();
-            this.NextSalaryPaymentDate = this.engine.company.GetNextSalaryPaymentDate();
+            FoundationDate = this.engine.timer.GetCurrentTime();
+            BudgetCurrent = this.engine.company.GetCompanyBudget();
+            NextSalaryPaymentDate = this.engine.company.GetNextSalaryPaymentDate();
 
             this.engine.timer.TimerUpdateEvent += OnTimerUpdateEvent;
-            this.engine.company.ProjectsCollectionChange += (o, e) => { this.NumberOfProjects = this.engine.company.GetNumberOfProjects(); };
-            this.engine.company.DevelopersCollectionChange += (o, e) => { this.NumberOfDevelopers = this.engine.company.GetNumberOfDevelopers(); };
+            this.engine.company.ProjectsCollectionChange += (o, e) => { NumberOfProjects = this.engine.company.GetNumberOfProjects(); };
+            this.engine.company.DevelopersCollectionChange += (o, e) => { NumberOfDevelopers = this.engine.company.GetNumberOfDevelopers(); };
             this.engine.company.BudgetChange += (o, e) => 
             { 
-                this.NextSalaryPaymentDate = this.engine.company.GetNextSalaryPaymentDate();
-                this.BudgetCurrent = this.engine.company.GetCompanyBudget();
+                BudgetCurrent = this.engine.company.GetCompanyBudget();
             };
         }
-
         private void OnTimerUpdateEvent(object sender, TimerUpdateEventArgs e)
         {
-            this.CurrentGameTime = e.TimerArgs;
+            NextSalaryPaymentDate = engine.company.GetNextSalaryPaymentDate();
+            CurrentGameTime = e.TimerArgs;
         }
     }
 }

@@ -5,6 +5,6 @@ namespace Game.UI.DataProvider
 {
     public interface IProjectDataProvider
     {
-        IEnumerable<Project> GetAllProjects();
+        IEnumerable<IProject> GetAllProjects();
     }
 }
