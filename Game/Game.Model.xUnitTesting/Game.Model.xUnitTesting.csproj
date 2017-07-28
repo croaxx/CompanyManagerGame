@@ -69,6 +69,7 @@
     <Compile Include="GameTimerxUnitTesting.cs" />
     <Compile Include="ProjectTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SoftwareCompanyTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

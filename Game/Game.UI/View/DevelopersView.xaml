@@ -14,41 +14,41 @@
         <converter:ThousandBasisConverter x:Key="thousandBasisConverter"></converter:ThousandBasisConverter>
     </UserControl.Resources>
 
-    <Grid>
-        <StackPanel HorizontalAlignment="Center">
+    <Grid TextElement.Foreground="White">
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
 
-            <Label FontSize="18" Content="Developer Characteristics" HorizontalAlignment="Center"/>
-            
+            <Label FontSize="22" Content="Developer Characteristics" HorizontalAlignment="Center"/>
+
             <StackPanel>
                 <Image Width="80" Source="{Binding OfferedDeveloper.Picture}"></Image>
             </StackPanel>
-            
+
             <StackPanel Orientation="Horizontal">
                 <TextBlock FontSize="18" Text="Full Name: "/>
-                <TextBlock FontSize="18" Width ="200" Text="{Binding OfferedDeveloper.FullName}"></TextBlock>
+                <TextBlock FontSize="18" Text="{Binding OfferedDeveloper.FullName}"></TextBlock>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">
                 <TextBlock FontSize="18" Text="Date of birth: "/>
-                <TextBlock FontSize="18" Width ="200" Text="{Binding OfferedDeveloper.Birth, StringFormat='dd/MM/yyyy'}"></TextBlock>
+                <TextBlock FontSize="18"  Text="{Binding OfferedDeveloper.Birth, StringFormat='dd/MM/yyyy'}"></TextBlock>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">
                 <TextBlock FontSize="18" Text="Salary: "/>
-                <TextBlock FontSize="18" Width ="200" Text="{Binding OfferedDeveloper.MonthlySalary, Converter={StaticResource localPriceConverter}}"></TextBlock>
+                <TextBlock FontSize="18"  Text="{Binding OfferedDeveloper.MonthlySalary, Converter={StaticResource localPriceConverter}}"></TextBlock>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock FontSize="18" Text="Code lines per day: "/>
-                    <TextBlock FontSize="18" Width ="200" Text="{Binding OfferedDeveloper.CodeLinesPerDay, Converter={StaticResource thousandBasisConverter}}"></TextBlock>
-                </StackPanel>
+                <TextBlock FontSize="18" Text="Code lines per day: "/>
+                <TextBlock FontSize="18"  Text="{Binding OfferedDeveloper.CodeLinesPerDay, Converter={StaticResource thousandBasisConverter}}"></TextBlock>
             </StackPanel>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button FontSize="18" Content="Hire" Width="50" Height="30" Command="{Binding HireDeveloperCommand}"></Button>
-                <Button FontSize="18" Margin ="10,0,0,0"  Content="Reject" Width="70" Height="30" Command="{Binding RejectDeveloperCommand}"></Button>
-            </StackPanel>
-        </StackPanel>
 
+
+            <StackPanel Margin="0,10,0,0" Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button FontSize="18" Content="Hire" Width="50" Height="30" Command="{Binding HireDeveloperCommand}"></Button>
+                <Button FontSize="18" Margin ="20,0,0,0"  Content="Reject" Width="70" Height="30" Command="{Binding RejectDeveloperCommand}"></Button>
+            </StackPanel>
+
+        </StackPanel>
     </Grid>
 </UserControl>

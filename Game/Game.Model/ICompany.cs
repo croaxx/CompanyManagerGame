@@ -5,21 +5,23 @@ namespace Game.Model
 {
     public interface ICompany
     {
-        event EventHandler<EventArgs> ProjectsCollectionChange;
-        event EventHandler<EventArgs> DevelopersCollectionChange;
-        event EventHandler<EventArgs> BudgetChange;
+        event EventHandler<ProjectEventArgs> ProjectAdded;
+        event EventHandler<ProjectEventArgs> ProjectRemoved;
+        event EventHandler<DeveloperEventArgs> DeveloperAdded;
+        event EventHandler<DeveloperEventArgs> DeveloperRemoved;
+        event EventHandler<EventArgs> BudgetChanged;
 
         string GetCompanyName();
-        long GetCompanyBudget();
+        double GetCompanyBudget();
         int GetNumberOfProjects();
         int GetNumberOfDevelopers();
         bool TryAcceptNewProject(IProject project, DateTime startTime);
         bool TryHireDeveloper(IDeveloper d);
-        bool TryQuitProjectAndPunishBudget(IProject title);
+        void SetProjectOngoingStatusToFalse(IProject title);
         IEnumerable<IProject> GetProjects();
         IEnumerable<IDeveloper> GetDevelopers();
         void UpdateCompanyStatus(DateTime time, ICompanyLogic logic);
-        void SetDeveloperResignationDateAfterMonths(IDeveloper d, DateTime currentime, int monthsspan);
+        void SetDeveloperResignationTime(IDeveloper d, DateTime time);
         DateTime GetNextSalaryPaymentDate();
     }
 }

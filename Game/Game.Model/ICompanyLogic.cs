@@ -1,20 +1,22 @@
 ﻿using System;
-using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 namespace Game.Model
 {
-    using DevContainer = EntityRepository<IDeveloper>;
-    using ProjContainer = EntityRepository<IProject>;
+    using DevContainer = EntityCollection<IDeveloper>;
+    using ProjContainer = EntityCollection<IProject>;
 
     public interface ICompanyLogic
     {
-        void RemoveResignedDevelopers(DevContainer developers, DateTime time);
-        void PaySalariesAndRemoveUnpaidDevs(DevContainer developers, ref long currentBudget);
+        IEnumerable<IDeveloper> RemoveResignedDevelopers(DevContainer developers, DateTime time);
+        IEnumerable<IDeveloper> PaySalariesAndRemoveUnpaidDevs(DevContainer developers, ref double currentBudget);
         void PerformOneWorkDayOnProjects(DevContainer developers, ProjContainer projects);
-        void RemoveExpiredProjectsAndUpdateTimeCompletionStatus(ProjContainer projects, DateTime time);
-        void RemoveFinishedProjectAndGetTheRestReward(ProjContainer projects, DateTime currentTime, ref long currentBudget);
-        void GetRevenueFromOneWorkDay(ProjContainer projects, ref long currentBudget);
-        void PunishBudgetForExpiredProject(ProjContainer projects, DateTime lastBookedTime, ref long budget);
-        long GetRewardReceivedFromProjectAtTime(IProject proj, DateTime currentTime);
+        IEnumerable<IProject> RemoveExpiredProjects(ProjContainer projects, DateTime time);
+        IEnumerable<IProject> RemoveFinishedProjectAndGetTheRestReward(ProjContainer projects, DateTime currentTime, ref double currentBudget);
+        IEnumerable<IProject> RemoveStoppedProjectsAndPunishBudget(ProjContainer projects, DateTime currentTime, ref double currentBudget);
+        void GetRevenueFromOneWorkDay(ProjContainer projects, ref double currentBudget);
+        void PunishBudgetForExpiredProject(ProjContainer projects, DateTime lastBookedTime, ref double budget);
+        double GetRewardReceivedFromProjectAtDate(IProject proj, DateTime currentTime);
+        
     }
 }

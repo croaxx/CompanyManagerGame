@@ -11,40 +11,52 @@
     <UserControl.Resources>
         <converter:PriceConverter x:Key="localPriceConverter"></converter:PriceConverter>
         <converter:ProgressForegroundConverter x:Key="ProgressForegroundConverter"></converter:ProgressForegroundConverter>
+        <converter:WorkAmountConverter x:Key="workAmountConverter"></converter:WorkAmountConverter>
+        <converter:ProjectStatusConverter x:Key="projectStatusConverter"></converter:ProjectStatusConverter>
+        <converter:ProgressBarConverterUniform x:Key ="progressBarConverterUniform"></converter:ProgressBarConverterUniform>
     </UserControl.Resources>
 
     <Grid>
-        <ListView ItemsSource="{Binding Projects}" x:Name="ListView1">
+        <ListView TextElement.Foreground="White" Background="Black" ItemsSource="{Binding Projects}" x:Name="ListView1">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Border BorderBrush="#CCCCCC" BorderThickness="2">
+                    <Border Padding="10" BorderBrush="#CCCCCC" BorderThickness="2">
+                        
                         <StackPanel Orientation="Vertical">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Project title: "></TextBlock>
                                 <TextBlock Text="{Binding Project.Title}"></TextBlock>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Status: "></TextBlock>
+                                <TextBlock Text="{Binding OngoingStatus, Converter={StaticResource projectStatusConverter}}"></TextBlock>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Started: "></TextBlock>
-                                <TextBlock Text="{Binding Project.StartTime, StringFormat='dd/MM/yyyy HH:mm::ss'}"></TextBlock>
+                                <TextBlock Text="{Binding Project.StartTime, StringFormat='dd/MM/yyyy'}"></TextBlock>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Due: "></TextBlock>
-                                <TextBlock Text="{Binding Project.ExpiryTime, StringFormat='dd/MM/yyyy HH:mm::ss'}"></TextBlock>
+                                <TextBlock Text="{Binding Project.ExpiryTime, StringFormat='dd/MM/yyyy'}"></TextBlock>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Reward: "></TextBlock>
                                 <TextBlock Text="{Binding Project.Reward, Converter={StaticResource localPriceConverter}}"></TextBlock>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="% time passed: "></TextBlock>
-                                <ProgressBar Width ="100" Minimum="0" Maximum="100" Value="{Binding PercentageTimePassed, Mode=OneWay}" Foreground="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Value, Converter={StaticResource ProgressForegroundConverter}}" />
+                                <TextBlock Text="Work amount: "></TextBlock>
+                                <TextBlock Text="{Binding Project.WorkAmountAssigned, Converter={StaticResource workAmountConverter}}"></TextBlock>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Work done: "></TextBlock>
-                                <ProgressBar Width ="100" Minimum="0" Maximum="100" Value="{Binding Project.WorkCompletionPercentage, Mode=OneWay}" Foreground="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Value}" />
+                                <TextBlock Width="80" Text="% time passed:"></TextBlock>
+                                <ProgressBar Width ="100" Minimum="0" Maximum="100" Value="{Binding PercentageTimePassed, Mode=OneWay}" Foreground="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Value, Converter={StaticResource ProgressForegroundConverter}}" />
                             </StackPanel>
-                            <StackPanel>
-                                <Button Command="{Binding ElementName=ListView1, Path=DataContext.RemoveProjectCommand}" CommandParameter="{Binding}" Width ="40" HorizontalAlignment="Center" Content="X"></Button>
+                            <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
+                                <TextBlock Width="80" Text="% work done:"></TextBlock>
+                                <ProgressBar Width ="100" Minimum="0" Maximum="100" Value="{Binding PercentageWorkCompleted, Mode=OneWay}" Foreground="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Value, Converter={StaticResource progressBarConverterUniform}}" />
+                            </StackPanel>
+                            <StackPanel Margin="0,10,0,0">
+                                <Button Padding="7" Foreground="Black" Background="Red" Command="{Binding ElementName=ListView1, Path=DataContext.RemoveProjectCommand}" CommandParameter="{Binding}" Width ="60" HorizontalAlignment="Center" Content="vacate"></Button>
                             </StackPanel>
                         </StackPanel>
                     </Border>

@@ -11,12 +11,12 @@ namespace Game.Model.xUnitTesting
     {
         private ICompanyLogic logic;
 
-        private EntityRepository<IDeveloper> GenerateRepositoryOfDevelopers(int devs, 
+        private EntityCollection<IDeveloper> GenerateRepositoryOfDevelopers(int devs, 
                                                                            IList<int> salaries, 
                                                                            IList<DateTime> resignTimes,
                                                                            IList<int> productivities)
         {
-            var devRepo = new EntityRepository<IDeveloper>();
+            var devRepo = new EntityCollection<IDeveloper>();
 
             for (int i = 0; i < devs; ++i)
             {
@@ -62,8 +62,8 @@ namespace Game.Model.xUnitTesting
             int devs = 4;
             var salaries = new List<int> { 15500, 6500, 17500, 7000 };
             var repo = GenerateRepositoryOfDevelopers(devs, salaries, null, null);
-            long budget = 50000;
-            long expectedRemainBudget = budget - salaries.Sum(x => x);
+            double budget = 50000;
+            double expectedRemainBudget = budget - salaries.Sum(x => x);
 
             logic.PaySalariesAndRemoveUnpaidDevs(repo, ref budget);
 
@@ -77,7 +77,7 @@ namespace Game.Model.xUnitTesting
             logic = new CompanyLogic();
             var salaries = new List<int> { 15500, 6500, 17500, 7000 };
             var repo = GenerateRepositoryOfDevelopers(salaries.Count, salaries, null, null);
-            long budget = 13500;
+            double budget = 13500.0;
             int expectedDevsAfterPayment = 2;
 
             logic.PaySalariesAndRemoveUnpaidDevs(repo, ref budget);
@@ -85,12 +85,12 @@ namespace Game.Model.xUnitTesting
             repo.Count.Should().Be(expectedDevsAfterPayment);
         }
 
-        private EntityRepository<IProject> GenerateRepositoryOfProjects(int projCount,
+        private EntityCollection<IProject> GenerateRepositoryOfProjects(int projCount,
                                                            IList<int> workAmountAssigned,
                                                            IList<DateTime> expiryTimes,
-                                                           IList<long> rewards)
+                                                           IList<double> rewards)
         {
-            var projRepo = new EntityRepository<IProject>();
+            var projRepo = new EntityCollection<IProject>();
 
             for (int i = 0; i < projCount; ++i)
             {
@@ -98,7 +98,7 @@ namespace Game.Model.xUnitTesting
 
                 int workAssigned = workAmountAssigned == null ? 0 : workAmountAssigned[i];
                 DateTime expiry = expiryTimes == null ? DateTime.MinValue : expiryTimes[i];
-                long reward = rewards == null ? 0 : rewards[i];
+                double reward = rewards == null ? 0 : rewards[i];
 
                 var p = new Project(name, expiry, reward, workAssigned);
 
@@ -148,21 +148,23 @@ namespace Game.Model.xUnitTesting
         public void RemoveFinishedProjectAndGetTheRestReward_Test()
         {
             var logic = new CompanyLogic();
-            var projectsRepo = new EntityRepository<IProject>();
+            var projectsRepo = new EntityCollection<IProject>();
             var project = A.Fake<IProject>();
             A.CallTo(() => project.StartTime).Returns(new DateTime(2011, 5, 13));
             A.CallTo(() => project.ExpiryTime).Returns(new DateTime(2017, 7, 22));
             var currentTime = new DateTime(2015, 5, 28);
             A.CallTo(() => project.IsWorkCompleted).Returns(true);
-            long projectReward = 15257;
+            double projectReward = 15257;
             A.CallTo(() => project.Reward).Returns(projectReward);
             projectsRepo.TryAdd(project);
-            long rewardReceived = logic.GetRewardReceivedFromProjectAtTime(project, currentTime);
+            double rewardReceived = logic.GetRewardReceivedFromProjectAtDate(project, currentTime);
 
             logic.RemoveFinishedProjectAndGetTheRestReward(projectsRepo, currentTime, ref rewardReceived);
 
             projectsRepo.Count.Should().Be(0);
             rewardReceived.Should().Be(projectReward);
         }
+
+
     }
 }

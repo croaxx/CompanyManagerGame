@@ -3,6 +3,15 @@ using System.Windows.Media;
 
 namespace Game.Model
 {
+    public class DeveloperEventArgs : EventArgs
+    {
+        public IDeveloper developer { get; }
+        public DeveloperEventArgs(IDeveloper args)
+        {
+            developer = args;
+        }
+    }
+
     public class Developer : IDeveloper
     {
         public string FullName { get; }

@@ -2,27 +2,31 @@
 
 namespace Game.Model
 {
+    public class ProjectEventArgs : EventArgs
+    {
+        public IProject project { get; }
+        public ProjectEventArgs(IProject args)
+        {
+            project = args;
+        }
+    }
+
     public class Project : IProject
     {
         private bool isStartTimeSet = false;
 
-        public Project(DateTime expiry)
+        private Project(DateTime expiry)
         {
             ExpiryTime = expiry;
         }
-        public Project(string title, DateTime expiry) : this(expiry)
+        private Project(string title, DateTime expiry) : this(expiry)
         {
             Title = title;
         }
-        public Project(string title, DateTime expiry, long reward, long workAmountAssigned) : this(title, expiry)
+        public Project(string title, DateTime expiry, double reward, long workAmountAssigned) : this(title, expiry)
         {
             Reward = reward;
-
-            if (workAmountAssigned < 0)
-                throw new ArgumentOutOfRangeException();
-            else
-                WorkAmountAssigned = workAmountAssigned;
-
+            WorkAmountAssigned = workAmountAssigned;
             WorkAmountRemaining = WorkAmountAssigned;
             WorkCompletionPercentage = 0.0;
             IsWorkCompleted = WorkAmountRemaining == 0 ? true : false;
@@ -33,8 +37,13 @@ namespace Game.Model
         public bool IsWorkCompleted { get; private set; }
         public long WorkAmountRemaining { get; private set; }
         public double WorkCompletionPercentage { get; private set; }
+        public bool IsOngoing { get; private set; } = true;
+        public void SetOnGoingStatusToFalse()
+        {
+            IsOngoing = false;
+        }
         public string Title { get; }
-        public long  Reward { get; }
+        public double  Reward { get; }
         public DateTime StartTime { get; private set; }
         public bool TrySetStartTime(DateTime time)
         {
@@ -92,6 +101,5 @@ namespace Game.Model
         {
             return Title.GetHashCode();
         }
-
     }
 }

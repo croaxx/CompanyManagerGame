@@ -6,10 +6,10 @@ using System.Threading;
 
 namespace Game.Model
 {
-    public class EntityRepository<T> : IEnumerable<T>
+    public class EntityCollection<T> : IEnumerable<T>
     {
         private ConcurrentDictionary<T, T> entity;
-        public EntityRepository()
+        public EntityCollection()
         {
             entity = new ConcurrentDictionary<T, T>();
         }
@@ -35,13 +35,17 @@ namespace Game.Model
 
     public class SoftwareCompany : ICompany
     {
-        public event EventHandler<EventArgs> ProjectsCollectionChange;
-        public event EventHandler<EventArgs> DevelopersCollectionChange;
-        public event EventHandler<EventArgs> BudgetChange;
+        public event EventHandler<ProjectEventArgs> ProjectAdded;
+        public event EventHandler<ProjectEventArgs> ProjectRemoved;
 
-        private EntityRepository<IProject> projects;
-        private EntityRepository<IDeveloper> developers;
-        private long currentBudget;
+        public event EventHandler<DeveloperEventArgs> DeveloperAdded;
+        public event EventHandler<DeveloperEventArgs> DeveloperRemoved;
+
+        public event EventHandler<EventArgs> BudgetChanged;
+
+        private EntityCollection<IProject> projects;
+        private EntityCollection<IDeveloper> developers;
+        private double currentBudget;
 
         public string Name { get; }
         public DateTime FoundationDate { get; }
@@ -49,8 +53,8 @@ namespace Game.Model
         public DateTime LastBookedTime { get; private set; }
         public SoftwareCompany(int budget = 200000)
         {
-            projects = new EntityRepository<IProject>();
-            developers = new EntityRepository<IDeveloper>();;
+            projects = new EntityCollection<IProject>();
+            developers = new EntityCollection<IDeveloper>();;
             currentBudget = budget;
         }
         private void SetFirstSalaryPaymentDateTo(int day)
@@ -58,8 +62,9 @@ namespace Game.Model
             var date = FoundationDate.TryIncrementMonths(1).Value;
             NextSalaryPaymentDate = date.AddDays(day - date.Day);
         }
-        public SoftwareCompany(DateTime time, int salaryDay = 25) : this()
+        public SoftwareCompany(DateTime time) : this()
         {
+            int salaryDay = 25;
             FoundationDate = time;
             LastBookedTime = FoundationDate;
             SetFirstSalaryPaymentDateTo(salaryDay);
@@ -73,7 +78,7 @@ namespace Game.Model
                 bool status = projects.TryAdd(proj);
 
                 if (status)
-                    ProjectsCollectionChange?.Invoke(this, new EventArgs());
+                    ProjectAdded?.Invoke(this, new ProjectEventArgs(proj));
 
                 return status;
             }
@@ -84,26 +89,17 @@ namespace Game.Model
         {
             return Name;
         }
-        public long GetCompanyBudget()
+        public double GetCompanyBudget()
         {
-            return Interlocked.Read(ref currentBudget);
+            return currentBudget;
         }
         public int GetNumberOfProjects()
         {
             return projects.Count;
         }
-        public bool TryQuitProjectAndPunishBudget(IProject proj)
+        public void SetProjectOngoingStatusToFalse(IProject proj)
         {
-            bool isRemoved = projects.TryRemove(proj);
-            
-            if (isRemoved)
-            {
-                Interlocked.Add(ref currentBudget, -proj.Reward);
-                BudgetChange?.Invoke(this, new EventArgs());
-                return true;
-            }
-
-            return false;
+            proj.SetOnGoingStatusToFalse();
         }
         public IEnumerable<IProject> GetProjects()
         {
@@ -119,30 +115,51 @@ namespace Game.Model
             {
                 if (LastBookedTime.Date == NextSalaryPaymentDate.Date)
                 {
-                    logic.PaySalariesAndRemoveUnpaidDevs(developers, ref currentBudget);
+                    var unpaidDevs = logic.PaySalariesAndRemoveUnpaidDevs(developers, ref currentBudget);
+                    
+                    foreach (var d in unpaidDevs)
+                        DeveloperRemoved?.Invoke(this, new DeveloperEventArgs(d));
+                    
                     NextSalaryPaymentDate = NextSalaryPaymentDate.TryIncrementMonths(1).Value;
                 }
-                
-                logic.PunishBudgetForExpiredProject(projects, LastBookedTime, ref currentBudget);
-                logic.RemoveExpiredProjectsAndUpdateTimeCompletionStatus(projects, LastBookedTime);
-                logic.RemoveResignedDevelopers(developers, LastBookedTime);
-                logic.PerformOneWorkDayOnProjects(developers, projects);
+
                 logic.GetRevenueFromOneWorkDay(projects, ref currentBudget);
-                logic.RemoveFinishedProjectAndGetTheRestReward(projects, LastBookedTime, ref currentBudget);
+
+                var stoppedProjects = logic.RemoveStoppedProjectsAndPunishBudget(projects, LastBookedTime, ref currentBudget);
+                
+                foreach (var p in stoppedProjects)
+                    ProjectRemoved?.Invoke(this, new ProjectEventArgs(p));
+
+                logic.PunishBudgetForExpiredProject(projects, LastBookedTime, ref currentBudget);
+                
+                var expiredProjects = logic.RemoveExpiredProjects(projects, LastBookedTime);
+
+                foreach (var p in expiredProjects)
+                    ProjectRemoved?.Invoke(this, new ProjectEventArgs(p));
+                
+                var resignedDevs = logic.RemoveResignedDevelopers(developers, LastBookedTime);
+                
+                foreach (var d in resignedDevs)
+                    DeveloperRemoved?.Invoke(this, new DeveloperEventArgs(d));
+
+                logic.PerformOneWorkDayOnProjects(developers, projects);
+                
+                var finishedProjects = logic.RemoveFinishedProjectAndGetTheRestReward(projects, LastBookedTime, ref currentBudget);
+                
+                foreach (var p in finishedProjects)
+                    ProjectRemoved?.Invoke(this, new ProjectEventArgs(p));
 
                 LastBookedTime = LastBookedTime.AddDays(1);
             }
 
-            ProjectsCollectionChange?.Invoke(this, new EventArgs());
-            DevelopersCollectionChange?.Invoke(this, new EventArgs());
-            BudgetChange?.Invoke(this, new EventArgs());
+            BudgetChanged?.Invoke(this, new EventArgs());
         }
         public bool TryHireDeveloper(IDeveloper d)
         {
             bool status = developers.TryAdd(d);
 
             if (status)
-                DevelopersCollectionChange?.Invoke(this, new EventArgs());
+                DeveloperAdded?.Invoke(this, new DeveloperEventArgs(d));
             
             return status;
         }
@@ -150,10 +167,9 @@ namespace Game.Model
         {
             return developers.Count;
         }
-        public void SetDeveloperResignationDateAfterMonths(IDeveloper d, DateTime currenttime, int monthsspan)
+        public void SetDeveloperResignationTime(IDeveloper d, DateTime time)
         {
-            d.Resign(currenttime.AddMonths(monthsspan));
-            DevelopersCollectionChange?.Invoke(this, new EventArgs());
+            d.Resign(time);
         }
         public DateTime GetNextSalaryPaymentDate()
         {

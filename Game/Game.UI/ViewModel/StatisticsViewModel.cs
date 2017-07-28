@@ -22,8 +22,8 @@ namespace Game.UI.ViewModel
             }
         }
 
-        private long budgetCurrent;
-        public long BudgetCurrent
+        private double budgetCurrent;
+        public double BudgetCurrent
         { 
             get
             {
@@ -106,12 +106,11 @@ namespace Game.UI.ViewModel
             NextSalaryPaymentDate = this.engine.company.GetNextSalaryPaymentDate();
 
             this.engine.timer.TimerUpdateEvent += OnTimerUpdateEvent;
-            this.engine.company.ProjectsCollectionChange += (o, e) => { NumberOfProjects = this.engine.company.GetNumberOfProjects(); };
-            this.engine.company.DevelopersCollectionChange += (o, e) => { NumberOfDevelopers = this.engine.company.GetNumberOfDevelopers(); };
-            this.engine.company.BudgetChange += (o, e) => 
-            { 
-                BudgetCurrent = this.engine.company.GetCompanyBudget();
-            };
+            this.engine.company.ProjectAdded += (o, e) => { NumberOfProjects = this.engine.company.GetNumberOfProjects(); };
+            this.engine.company.ProjectRemoved += (o, e) => { NumberOfProjects = this.engine.company.GetNumberOfProjects(); };
+            this.engine.company.DeveloperAdded += (o, e) => { NumberOfDevelopers = this.engine.company.GetNumberOfDevelopers(); };
+            this.engine.company.DeveloperRemoved += (o, e) => { NumberOfDevelopers = this.engine.company.GetNumberOfDevelopers(); };
+            this.engine.company.BudgetChanged += (o, e) => { BudgetCurrent = this.engine.company.GetCompanyBudget(); };
         }
         private void OnTimerUpdateEvent(object sender, TimerUpdateEventArgs e)
         {

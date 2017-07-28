@@ -14,7 +14,7 @@ namespace Game.ModelTests
         {
             var expiryTime = new DateTime(2017, 10, 2);
             var currentTime = new DateTime(2017, 10, 3);
-            testee = new Project(expiryTime);
+            testee = new Project("", expiryTime, 0, 0);
 
             bool status = testee.IsExpired(currentTime);
 
@@ -26,7 +26,7 @@ namespace Game.ModelTests
         {
             var expiryTime = new DateTime(2017, 10, 2);
             var currentTime = new DateTime(2017, 10, 2);
-            testee = new Project(expiryTime);
+            testee = new Project("", expiryTime, 0 , 0);
 
             bool status = testee.IsExpired(currentTime);
 
@@ -38,7 +38,7 @@ namespace Game.ModelTests
         {
             var startTime = new DateTime(2017, 12, 10);
             var expiryDate = startTime.AddDays(5);
-            testee = new Project(expiryDate);
+            testee = new Project("", expiryDate, 0, 0);
 
             bool resultSet1 = testee.TrySetStartTime(startTime);
             bool resultSet2 = testee.TrySetStartTime(expiryDate.AddDays(10));
@@ -55,20 +55,11 @@ namespace Game.ModelTests
         {
             var expiryTime = new DateTime(2017, 10, 5); 
             var startTime = new DateTime(year, month, day); 
-            testee = new Project(expiryTime);
+            testee = new Project("", expiryTime, 0, 0);
 
             bool timeSetSuccedStatus = testee.TrySetStartTime(startTime);
             
             timeSetSuccedStatus.Should().Be(isTimeSetSucceded);
-        }
-
-        [Fact]
-        public void ProjectConstructorThrows_If_WorkAmountAssigned_IsNegative()
-        {
-            long workAmountAssigned = -100;
-            Action<long> act = c => testee = new Project("", DateTime.Now, 0, workAmountAssigned);
-
-            Assert.Throws<ArgumentOutOfRangeException>(() => act(workAmountAssigned));
         }
 
         [Theory]
@@ -78,15 +69,15 @@ namespace Game.ModelTests
         public void DoWorkOnProject_Returns_UnusedWorkAmount_And_Sets_CompletionStatus(long workAmountAssigned,
                                                                                        long workAmountToDo,
                                                                                        long workAmountRemaining,
-                                                                                       long unusedWork,
+                                                                                       long unusedWorkExpected,
                                                                                        bool isWorkCompleted)
         {
             testee = new Project("", DateTime.Now, 0, workAmountAssigned);
 
-            var unusedWorkAmount = testee.DoWorkOnProject(workAmountToDo);
+            var unusedWork = testee.DoWorkOnProject(workAmountToDo);
 
             testee.WorkAmountRemaining.Should().Be(workAmountRemaining);
-            unusedWorkAmount.Should().Be(unusedWork);
+            unusedWork.Should().Be(unusedWorkExpected);
             testee.IsWorkCompleted.Should().Be(isWorkCompleted);
         }
 

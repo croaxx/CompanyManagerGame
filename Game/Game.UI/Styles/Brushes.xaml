@@ -1,15 +1,18 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+  <SolidColorBrush x:Key="LabelForegroundBrush" Color="White"/>
+  <SolidColorBrush x:Key="TextBoxForegroundBrush" Color="White"/>
+    <SolidColorBrush x:Key="ButtonForegroundBrush" Color="#555555"/>
+    <SolidColorBrush x:Key="ButtonTextColor" Color="Black"/>
+  <!--<SolidColorBrush x:Key="TabItemForegroundBrush" Color="Black"/>-->
+    
+  <!--<SolidColorBrush x:Key="DefaultForegroundBrush" Color="White"/>
+  <SolidColorBrush x:Key="DefaultBackgroundBrush" Color="White"/>
+  <SolidColorBrush x:Key="DefaultBorderBrush" Color="Black"/>-->
 
-  <!--Default Brushes for the FriendStorage-application-->
-  <SolidColorBrush x:Key="DefaultForegroundBrush" Color="White"/>
-  <SolidColorBrush x:Key="DefaultBackgroundBrush" Color="#555555"/>
-  <SolidColorBrush x:Key="DefaultBorderBrush" Color="#888888"/>
-
-  <SolidColorBrush x:Key="DisabledBorderBrush" Color="Gray"/>
-  <SolidColorBrush x:Key="DisabledForegroundBrush" Color="Gray"/>
-
-  <SolidColorBrush x:Key="LabelForegroundBrush" Color="#CCCCCC"/>
+  <SolidColorBrush x:Key="DisabledBorderBrush" Color="Black"/>
+  <SolidColorBrush x:Key="DisabledForegroundBrush" Color="Black"/>
 
   <SolidColorBrush x:Key="ButtonMouseOverBackgroundBrush" Color="#777777"/>
   <SolidColorBrush x:Key="ButtonIsPressedBackgroundBrush" Color="#999999"/>

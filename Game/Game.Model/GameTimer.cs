@@ -10,9 +10,9 @@ namespace Game.Model
         
         private double timeSpeedFactor;
         public DateTime StartTime { get; }
-        public int UpdateFrequencyHz { get; }
+        public double UpdateFrequencyHz { get; }
         public DateTime CurrentGameTime{ get; private set; }
-        public GameTimer(int updateTimeFrequencyHz = 1, double speedFactor = 1)
+        public GameTimer(double updateTimeFrequencyHz = 1.0, double speedFactor = 1)
         {
             StartTime = DateTime.Now;
             CurrentGameTime = StartTime;
@@ -21,7 +21,7 @@ namespace Game.Model
         }
         public void RunTimerSynchronously()
         {
-            long waitTimeInMilliseconds = 1000*UpdateFrequencyHz;
+            double waitTimeInMilliseconds = 1000.0 / UpdateFrequencyHz;
             
             for (;;)
             {

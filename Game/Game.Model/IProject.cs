@@ -9,8 +9,10 @@ namespace Game.Model
         bool IsWorkCompleted { get; }
         long WorkAmountRemaining { get; }
         double WorkCompletionPercentage { get; }
+        bool IsOngoing { get; }
+        void SetOnGoingStatusToFalse();
         string Title { get; }
-        long  Reward { get; }
+        double  Reward { get; }
         DateTime StartTime { get; }
         bool TrySetStartTime(DateTime time);
         bool IsExpired(DateTime time);

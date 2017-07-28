@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Game.UI.View"
         xmlns:view="clr-namespace:Game.UI.View"
         mc:Ignorable="d"
-        Title="MainWindow" Height="500" Width="700">
+        Title="MainWindow" Height="900" Width="1200">
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -18,7 +18,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <view:StatisticsView Grid.Row="0" Grid.Column="1" DataContext="{Binding StatisticsViewModel}">
+        <view:StatisticsView Background="Black" Grid.Row="0" Grid.Column="1" DataContext="{Binding StatisticsViewModel}">
         </view:StatisticsView>
 
         <view:ProjectsView Grid.Row="1" Grid.Column="0" DataContext="{Binding ProjectsViewModel}">
@@ -27,7 +27,7 @@
         <view:DevelopersSummaryView Grid.Row="1" Grid.Column="1" DataContext="{Binding DevelopersSummaryViewModel}">
         </view:DevelopersSummaryView>
 
-        <TabControl>
+        <TabControl Background="Black">
             <TabItem Header="Projects">
                 <view:ProjectManagementView DataContext="{Binding ProjectManagementViewModel}">
                 </view:ProjectManagementView>

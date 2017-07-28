@@ -3,8 +3,8 @@
   <Style TargetType="Button">
     <Setter Property="BorderBrush" Value="#666666"/>
     <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="Background" Value="{StaticResource DefaultBackgroundBrush}"/>
-    <Setter Property="Foreground" Value="{StaticResource DefaultForegroundBrush}"/>
+        <Setter Property="Background" Value="{StaticResource ButtonForegroundBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource ButtonTextColor}"/>
     <Setter Property="Padding" Value="2"/>
     <Setter Property="Width" Value="75"/>
     <Setter Property="Template">

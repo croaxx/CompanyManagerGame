@@ -13,46 +13,44 @@
         <converter:SalaryPaymentDayConverter x:Key="salaryPaymentDayConverter"></converter:SalaryPaymentDayConverter>
     </UserControl.Resources>
 
-    <Grid>
-        <StackPanel Orientation="Vertical">
+    <Grid TextElement.Foreground="White">
+        <StackPanel Margin="10, 0, 0, 0" Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
             
-            <Label HorizontalAlignment="Center"
-                   FontSize="22"
-                   Content="Statistics"/>
+            <Label HorizontalAlignment="Center" FontSize="22" Content="Statistics"/>
 
             <StackPanel Orientation="Horizontal">
-                <TextBlock FontSize="18" Background="AliceBlue" Text="Company founded on: "/>
-                <TextBlock FontSize="18" Background="AliceBlue" Width ="200" Text="{Binding FoundationDate, StringFormat='dd/MM/yyyy'}"></TextBlock>
+                <TextBlock FontSize="18"  Text="Company founded on: "/>
+                <TextBlock FontSize="18"  Width ="200" Text="{Binding FoundationDate, StringFormat='dd/MM/yyyy'}"></TextBlock>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">
-                <TextBlock FontSize="18" Background="AliceBlue" Text="Next salary payment on: "/>
-                <TextBlock FontSize="18" Background="AliceBlue" Width ="200" Text="{Binding NextSalaryPaymentDate, StringFormat='dd/MM/yyyy'}"></TextBlock>
+                <TextBlock FontSize="18"  Text="Next salary payment on: "/>
+                <TextBlock FontSize="18"  Width ="200" Text="{Binding NextSalaryPaymentDate, StringFormat='dd/MM/yyyy'}"></TextBlock>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">
-                <TextBlock FontSize="18" Background="AliceBlue" Text="Current Budget: "/>
-                <TextBlock FontSize="18" Background="AliceBlue" Width ="200" Text="{Binding BudgetCurrent, Converter={StaticResource localPriceConverter}}"></TextBlock>
+                <TextBlock FontSize="18"  Text="Current Budget: "/>
+                <TextBlock FontSize="18"  Width ="200" Text="{Binding BudgetCurrent, Converter={StaticResource localPriceConverter}}"></TextBlock>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">
-                <TextBlock FontSize="18" Background="AliceBlue" Text="# projects: "/>
-                <TextBlock FontSize="18" Background="AliceBlue" Width ="200" Text="{Binding NumberOfProjects}"></TextBlock>
+                <TextBlock FontSize="18"  Text="# projects: "/>
+                <TextBlock FontSize="18"  Width ="200" Text="{Binding NumberOfProjects}"></TextBlock>
             </StackPanel>
             
             <StackPanel Orientation="Horizontal">
                 <TextBlock FontSize="18" Text="# developers: "></TextBlock>
-                <TextBlock FontSize="18" Background="AliceBlue" Width ="200" Text="{Binding NumberOfDevelopers}"></TextBlock>
+                <TextBlock FontSize="18"  Width ="200" Text="{Binding NumberOfDevelopers}"></TextBlock>
             </StackPanel>
             
             <StackPanel Orientation="Horizontal">
-                <TextBlock FontSize="18" Background="AliceBlue" Text="current time: "/>
-                <TextBlock FontSize="18" Background="AliceBlue" Width ="200" Text="{Binding CurrentGameTime, StringFormat='dd/MM/yyyy HH:mm:ss'}"></TextBlock>
+                <TextBlock FontSize="18"  Text="current time: "/>
+                <TextBlock FontSize="18"  Width ="200" Text="{Binding CurrentGameTime, StringFormat='dd/MM/yyyy HH:mm:ss'}"></TextBlock>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">
-                <TextBlock FontSize="18" Background="AliceBlue" Text="Speed factor: "/>
-                <TextBox FontSize="18" Background="AliceBlue" Width ="160" Text ="{Binding TimeSpeedFactor, Mode = TwoWay}"></TextBox>
+                <TextBlock FontSize="18"  Text="Speed factor: "/>
+                <TextBox Foreground="Black" FontSize="18"  Width ="160" Text ="{Binding TimeSpeedFactor, Mode = TwoWay}"></TextBox>
             </StackPanel>
         </StackPanel>
     </Grid>

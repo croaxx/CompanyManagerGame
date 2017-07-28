@@ -16,31 +16,31 @@
     </UserControl.Resources>
 
     <Grid>
-        <ListView ItemsSource="{Binding Developers}" x:Name="ListView1">
+        <ListView TextElement.Foreground="White" Background="Black" ItemsSource="{Binding Developers}" x:Name="ListView1">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Border Padding="10" BorderBrush="#CCCCCC" BorderThickness="2">
                         <StackPanel Orientation="Horizontal">
-                            <Image Width="35" Source="{Binding Picture}"></Image>
+                            <Image Width="35" Source="{Binding Developer.Picture}"></Image>
                             <StackPanel Margin ="10,0,0,0" Orientation="Vertical">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="Name: "></TextBlock>
-                                    <TextBlock Text="{Binding FullName}"></TextBlock>
+                                    <TextBlock Text="{Binding Developer.FullName}"></TextBlock>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="Salary: "></TextBlock>
-                                    <TextBlock Text="{Binding MonthlySalary, Converter={StaticResource localPriceConverter}}"></TextBlock>
+                                    <TextBlock Text="{Binding Developer.MonthlySalary, Converter={StaticResource localPriceConverter}}"></TextBlock>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="Code lines/day: "></TextBlock>
-                                    <TextBlock Text="{Binding CodeLinesPerDay, Converter={StaticResource thousandBasisConverter}}"></TextBlock>
+                                    <TextBlock Text="{Binding Developer.CodeLinesPerDay, Converter={StaticResource thousandBasisConverter}}"></TextBlock>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="Status: "></TextBlock>
                                     <TextBlock Text="{Binding FireDate, Converter={StaticResource employmentStatusConverter}}"></TextBlock>
                                 </StackPanel>
                             </StackPanel>
-                            <Button Command="{Binding ElementName=ListView1, Path=DataContext.FireDeveloperCommand}" CommandParameter="{Binding}" Margin ="10,0,0,0" Content ="Fire" Width="35" Height="20"></Button>
+                            <Button Foreground="Black" Background="Red" Command="{Binding ElementName=ListView1, Path=DataContext.FireDeveloperCommand}" CommandParameter="{Binding}" Margin ="10,0,0,0" Content ="Fire" Width="35" Height="20"></Button>
                         </StackPanel>
                     </Border>
                 </DataTemplate>

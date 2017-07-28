@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System;
 using System.Windows.Input;
 using Game.UI.Command;
+using System.Linq;
 
 namespace Game.UI.ViewModel
 {
@@ -12,23 +13,52 @@ namespace Game.UI.ViewModel
         public class ProjectRepresentationViewModel : ViewModelBase
         {
             public IProject Project { get; }
-
-            private double _percentageTimePassed;
-            public double PercentageTimePassed {
-                get{return _percentageTimePassed; }
+            public bool ongoingStatus;
+            public bool OngoingStatus
+            {
+                get { return ongoingStatus; }
                 set
                 {
-                    if (value != _percentageTimePassed)
+                    if (value != ongoingStatus)
                    {
-                        _percentageTimePassed = value;
+                        ongoingStatus = value;
+                        OnPropertyChanged("OngoingStatus");
+                    }
+                }
+            }
+
+            private double percentageWorkCompleted;
+            public double PercentageWorkCompleted
+            {
+                get { return percentageWorkCompleted; }
+                set
+                {
+                    if (value != percentageWorkCompleted)
+                   {
+                        percentageWorkCompleted = value;
+                        OnPropertyChanged("PercentageWorkCompleted");
+                    }
+                }
+            }
+
+            private double percentageTimePassed;
+            public double PercentageTimePassed
+            {
+                get {return percentageTimePassed; }
+                set
+                {
+                    if (value != percentageTimePassed)
+                   {
+                        percentageTimePassed = value;
                         OnPropertyChanged("PercentageTimePassed");
                     }
-                    
-                } }
+                }
+            }
             public ProjectRepresentationViewModel(IProject proj, ITimer timer)
             {
                 Project = proj;
                 PercentageTimePassed = proj.GetPercentageTimePassed(timer.GetCurrentTime());
+                OngoingStatus = proj.IsOngoing;
             }
         }
 
@@ -40,19 +70,29 @@ namespace Game.UI.ViewModel
         {
             Projects = new ObservableCollection<ProjectRepresentationViewModel>();
             this.engine = engine;
-            this.engine.company.ProjectsCollectionChange += OnProjectsCollectionChange;
+            this.engine.company.ProjectAdded += OnProjectsAdded;
+            this.engine.company.ProjectRemoved += OnProjectRemoved;
+            this.engine.timer.TimerUpdateEvent += OnTimerUpdateEvent;
             LoadCommands();
         }
-        private void OnProjectsCollectionChange(object sender, EventArgs e)
+
+        private void OnTimerUpdateEvent(object sender, TimerUpdateEventArgs e)
+        {
+            foreach (var p in Projects)
+            {
+                p.PercentageTimePassed = p.Project.GetPercentageTimePassed(e.TimerArgs);
+                p.PercentageWorkCompleted = p.Project.WorkCompletionPercentage;
+            }
+        }
+        private void OnProjectsAdded(object sender, ProjectEventArgs e)
+        {
+            Projects.Add(new ProjectRepresentationViewModel(e.project, engine.timer));
+        }
+        private void OnProjectRemoved(object sender, ProjectEventArgs e)
         {
             App.Current.Dispatcher.Invoke(delegate
             {
-                Projects.Clear();
-
-                foreach (var p in engine.company.GetProjects())
-                {
-                    Projects.Add(new ProjectRepresentationViewModel(p, engine.timer));
-                }
+                Projects.Remove(Projects.Where(c => ReferenceEquals(c.Project, e.project)).Single());
             });
         }
         private void LoadCommands()
@@ -66,8 +106,8 @@ namespace Game.UI.ViewModel
         private void RemoveSpecifiedProject(object obj)
         {
             ProjectRepresentationViewModel p = obj as ProjectRepresentationViewModel;
-            engine.company.TryQuitProjectAndPunishBudget(p.Project);
-            Projects.Remove(p);
+            engine.company.SetProjectOngoingStatusToFalse(p.Project);
+            p.OngoingStatus = false;
         }
     }
 }
